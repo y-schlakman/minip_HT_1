@@ -5,7 +5,7 @@ import java.lang.*;
  * Point3D class is used to represent a point in 3 dimensional cartesian space.
  * This class is used in many geometries and as a component of Vector.
  *
- * @author Eli and Yossi.
+ * @author Eli and Yosi.
  */
 
 public class Point3D {

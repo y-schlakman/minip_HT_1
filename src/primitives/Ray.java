@@ -5,7 +5,7 @@ package primitives;
  * pointing in a direction 'dir'.
  * The class is used in many calculations such as those regarding rays of light or vision.
  *
- * @author Eli and Yossi.
+ * @author Eli and Yosi.
  */
 public class Ray {
 
