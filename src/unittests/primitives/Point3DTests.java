@@ -7,7 +7,7 @@ import org.junit.jupiter.api.Test;
 /**
  * Unit tests for primitives.Point3D class
  *
- * @author Yosi
+ * @author Yosi And Eli
  */
 class Point3DTests {
 
@@ -33,6 +33,10 @@ class Point3DTests {
         // ============ Equivalence Partitions Tests ==============
         //TC01: Test if subtract() result is correct
         assertEquals(new Vector(1, 1, 1), new Point3D(2, 3, 4).subtract(p1), "ERROR: subtract() wrong result");
+
+        // =============== Boundary Values Tests ==================
+        //TC11: Test if exception is thrown if result is zero vector
+        assertThrows(IllegalArgumentException.class, ()->p1.subtract(p1), "ERROR: subtract() doesn't throw exception when result is zero vector");
     }
 
     /**

@@ -8,7 +8,7 @@ import static org.junit.jupiter.api.Assertions.*;
 /**
  * Unit tests for geometries.Cylinder class
  *
- * @author Yosi
+ * @author Yosi And Eli
  */
 class CylinderTests {
 
@@ -20,16 +20,16 @@ class CylinderTests {
         Ray ray = new Ray(new Point3D(0,0,0), new Vector(1,2,3));
 
         // =============== Boundary Values Tests ==================
-        //TC10: Test if exception is thrown for radius of negative length
+        //TC11: Test if exception is thrown for radius of negative length
         assertThrows(IllegalArgumentException.class, ()->new Cylinder(ray, -1, 10), "ERROR: exception not thrown for negative radius");
 
-        //TC11: Test if exception is thrown for radius of length zero
+        //TC12: Test if exception is thrown for radius of length zero
         assertThrows(IllegalArgumentException.class, ()->new Cylinder(ray, 0, 10), "ERROR: exception not thrown for zero radius");
 
-        //TC12: Test if exception is thrown for height of negative length
+        //TC13: Test if exception is thrown for height of negative length
         assertThrows(IllegalArgumentException.class, ()->new Cylinder(ray, 10, -1), "ERROR: exception not thrown for negative height");
 
-        //TC13: Test if exception is thrown for height of length zero
+        //TC14: Test if exception is thrown for height of length zero
         assertThrows(IllegalArgumentException.class, ()->new Cylinder(ray, 10, 0), "ERROR: exception not thrown for zero height");
     }
 

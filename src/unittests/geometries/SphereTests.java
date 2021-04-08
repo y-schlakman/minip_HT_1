@@ -8,7 +8,7 @@ import primitives.*;
 /**
  * Unit tests for geometries.Sphere class
  *
- * @author Yosi
+ * @author Yosi And Eli
  */
 class SphereTests {
 
@@ -18,10 +18,10 @@ class SphereTests {
     @Test
     void constructorTest() {
         // =============== Boundary Values Tests ==================
-        //TC10: Test if exception thrown for negative radius
+        //TC11: Test if exception thrown for negative radius
         assertThrows(IllegalArgumentException.class, ()->new Sphere(new Point3D(0,0,0), -1), "ERROR: no exception thrown for negative radius");
 
-        //TC11: Test if exception thrown for zero radius
+        //TC12: Test if exception thrown for zero radius
         assertThrows(IllegalArgumentException.class, ()->new Sphere(new Point3D(0,0,0), 0), "ERROR: no exception thrown for zero radius");
     }
 

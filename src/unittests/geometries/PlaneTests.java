@@ -8,7 +8,7 @@ import static org.junit.jupiter.api.Assertions.*;
 /**
  * Unit tests for geometries.Plane class
  *
- * @author Yosi
+ * @author Yosi And Eli
  */
 class PlaneTests {
 
@@ -22,10 +22,10 @@ class PlaneTests {
         Point3D p3 = new Point3D(2,0,0);
 
         // =============== Boundary Values Tests ==================
-        //TC10: Test if exception thrown if first and second points are the same point
+        //TC11: Test if exception thrown if first and second points are the same point
         assertThrows(IllegalArgumentException.class, ()->new Plane(p1,p1,new Point3D(0,1,1)), "ERROR: no exception thrown when first two points are the same");
 
-        //TC11: Test if exception thrown if all points are on the same line
+        //TC12: Test if exception thrown if all points are on the same line
         assertThrows(IllegalArgumentException.class, ()->new Plane(p1,p2,p3), "ERROR: no exception thrown when points are on same line");
     }
 

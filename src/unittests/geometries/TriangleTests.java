@@ -8,7 +8,7 @@ import primitives.*;
 /**
  * Unit tests for geometries.Triangle class
  *
- * @author Yosi
+ * @author Yosi And Eli
  */
 class TriangleTests {
 

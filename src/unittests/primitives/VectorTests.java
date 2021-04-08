@@ -8,7 +8,7 @@ import static primitives.Util.isZero;
 /**
  * Unit tests for primitives.Vector class
  *
- * @author Yosi
+ * @author Yosi And Eli
  */
 class VectorTests {
 
@@ -18,7 +18,7 @@ class VectorTests {
     @Test
     void testConstructorXYZ() {
         // =============== Boundary Values Tests ==================
-        //TC10: Test to check that exception is thrown when vector constructor is passed zero vector
+        //TC11: Test to check that exception is thrown when vector constructor is passed zero vector
         assertThrows(IllegalArgumentException.class,() -> new Vector(0, 0, 0), "ERROR: zero vector does not throw an exception");
     }
 
@@ -28,7 +28,7 @@ class VectorTests {
     @Test
     void testConstructorHead() {
         // =============== Boundary Values Tests ==================
-        //TC10: Test to check that exception is thrown when vector constructor is passed zero vector
+        //TC11: Test to check that exception is thrown when vector constructor is passed zero vector
         assertThrows(IllegalArgumentException.class,() -> new Vector(new Point3D(0,0,0)), "ERROR: zero vector does not throw an exception");
     }
 
@@ -45,7 +45,7 @@ class VectorTests {
         assertEquals(new Vector(-1, -2, -3), v1.add(v2), "ERROR: add() wrong result");
 
         // =============== Boundary Values Tests ==================
-        //TC10: Test that if add() result is zero than an exception is thrown
+        //TC11: Test that if add() result is zero than an exception is thrown
         assertThrows(IllegalArgumentException.class, ()->v1.add(v1.scale(-1)), "ERROR: add() doesn't throw error when result is zero");
     }
 
@@ -62,7 +62,7 @@ class VectorTests {
         assertEquals(new Vector(3, 6, 9), v1.subtract(v2), "ERROR: subtract() wrong result");
 
         // =============== Boundary Values Tests ==================
-        //TC10: Test that if subtract() result is zero than an exception is thrown
+        //TC11: Test that if subtract() result is zero than an exception is thrown
         assertThrows(IllegalArgumentException.class, ()->v1.subtract(v1), "ERROR: subtract() doesn't throw error when result is zero");
     }
 
@@ -78,7 +78,7 @@ class VectorTests {
         assertEquals(new Vector(1*-0.5,2*-0.5,3*-0.5), v1.scale(-0.5), "ERROR: scale() wrong result");
 
         // =============== Boundary Values Tests ==================
-        //TC10: Test that scale() by scaling factor of zero throws an exception
+        //TC11: Test that scale() by scaling factor of zero throws an exception
         assertThrows(IllegalArgumentException.class, ()->v1.scale(0), "ERROR: scale() by scaling factor of zero doesn't throw exception");
     }
 
@@ -118,7 +118,7 @@ class VectorTests {
         assertTrue(isZero(vr.dotProduct(v3)), "ERROR: crossProduct() result is not orthogonal to second operand");
 
         // =============== Boundary Values Tests ==================
-        //TC10: Test to see if crossProduct() for parallel vectors throws an exception as expected
+        //TC11: Test to see if crossProduct() for parallel vectors throws an exception as expected
         assertThrows(IllegalArgumentException.class, () -> v1.crossProduct(v2), "ERROR: crossProduct() for parallel vectors does not throw an exception");
     }
 
