@@ -29,8 +29,17 @@ public class Plane implements Geometry {
      * @param p3 third point
      */
     public Plane(Point3D p1, Point3D p2, Point3D p3) {
+        //check if first two points are the same
+        if(p1.equals(p2))
+            throw new IllegalArgumentException("first two points are the same");
+
+        //check if all have the same slope (then they are on the same line)
+        if((p1.subtract(p2).equals(p1.subtract(p3)) || p1.subtract(p2).equals(p1.subtract(p3).scale(-1)))
+                && (p2.subtract(p3).equals(p1.subtract(p2))||p2.subtract(p3).equals(p1.subtract(p2).scale(-1))))
+            throw new IllegalArgumentException("points are on the same line");
+
         q0 = p1;
-        _normal = null;
+        _normal = p3.subtract(p1).crossProduct(p2.subtract(p1)).normalize();
     }
 
     /**
@@ -59,7 +68,7 @@ public class Plane implements Geometry {
 
     @Override
     public Vector getNormal(Point3D point) {
-        return null;
+        return _normal;
     }
 
     @Override

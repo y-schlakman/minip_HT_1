@@ -27,6 +27,24 @@ public class Ray {
             this.dir.normalized();
     }
 
+    /**
+     * getter for p0 field
+     * @return value of p0
+     */
+    public Point3D get_p0()
+    {
+        return p0;
+    }
+
+    /**
+     * getter for dir field
+     * @return value of dir
+     */
+    public Vector get_dir()
+    {
+        return dir;
+    }
+
     @Override
     public boolean equals(Object obj) {
         if (this == obj) return true;

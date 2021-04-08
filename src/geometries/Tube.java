@@ -2,6 +2,8 @@ package geometries;
 
 import primitives.*;
 
+import static primitives.Util.isZero;
+
 /**
  * class that represents a Tube in 3d space
  * @author Yosi and Eli
@@ -44,7 +46,15 @@ public class Tube implements Geometry {
 
     @Override
     public Vector getNormal(Point3D point) {
-        return null;
+        //if point is in line with head of the ray treat like a sphere
+        if(isZero(_axisRay.get_p0().subtract(point).dotProduct(_axisRay.get_dir())))
+        {
+            return point.subtract(_axisRay.get_p0()).normalize();
+        }
+        //otherwise treat like tube - names of variables were inspired by the matzeget
+        double t = _axisRay.get_dir().normalized().dotProduct(point.subtract(_axisRay.get_p0()));
+        Point3D o = _axisRay.get_p0().add(_axisRay.get_dir().scale(t));
+        return point.subtract(o).normalize();
     }
 
     @Override
