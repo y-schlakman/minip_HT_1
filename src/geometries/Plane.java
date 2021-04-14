@@ -1,6 +1,10 @@
 package geometries;
 
 import primitives.*;
+import static primitives.Util.*;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * class that represents a Plane in 3d space
@@ -70,6 +74,7 @@ public class Plane implements Geometry {
      * @return normal to plane
      * @deprecated use {@link Plane#getNormal(Point3D)} with null as param.
      */
+    @Deprecated
     public Vector getNormal() {
         return null;
     }
@@ -77,6 +82,35 @@ public class Plane implements Geometry {
     @Override
     public Vector getNormal(Point3D point) {
         return _normal;
+    }
+
+    /**
+     * Finds the intersection point (should one exist) between the plane and a given ray.
+     *
+     * @param ray the ray intersecting the geometry.
+     * @return a list containing the intersection point. (if there is no intersection null will be returned).
+     */
+    @Override
+    public List<Point3D> findIntersections(Ray ray) {
+        if(q0 == ray.get_p0())
+            return null;
+
+        double nv = _normal.dotProduct(ray.get_dir());
+
+        if(isZero(nv))
+            return null;
+
+        Vector toPlane = q0.subtract(ray.get_p0());
+
+        double t = alignZero(_normal.dotProduct(toPlane) / nv);
+        if(t<=0)
+            return null;
+
+        Point3D intersection = ray.get_p0().add(ray.get_dir().scale(t));
+
+        List<Point3D> res = new ArrayList<>();
+        res.add(intersection);
+        return res;
     }
 
     @Override

@@ -2,6 +2,8 @@ package geometries;
 
 import primitives.*;
 
+import java.util.List;
+
 import static primitives.Util.isZero;
 
 /**
@@ -55,6 +57,12 @@ public class Tube implements Geometry {
         double t = _axisRay.get_dir().normalized().dotProduct(point.subtract(_axisRay.get_p0()));
         Point3D o = _axisRay.get_p0().add(_axisRay.get_dir().scale(t));
         return point.subtract(o).normalize();
+    }
+
+    @Override
+    public List<Point3D> findIntersections(Ray ray) {
+        //For now no implementation.
+        return null;
     }
 
     @Override

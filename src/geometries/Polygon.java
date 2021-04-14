@@ -1,6 +1,7 @@
 package geometries;
 
 import java.util.List;
+import java.util.ArrayList;
 import primitives.*;
 import static primitives.Util.*;
 
@@ -86,5 +87,39 @@ public class Polygon implements Geometry {
 	public Vector getNormal(Point3D point) {
 		// plane.getNormal();
 		return plane.getNormal(null);
+	}
+
+	@Override
+	public List<Point3D> findIntersections(Ray ray) {
+		int s = vertices.size(); //we use this value multiple times so we save it locally to avoid many function calls.
+
+		List<Point3D> intersection = plane.findIntersections(ray);
+		if(intersection == null)
+			return null;
+
+		List<Vector> toVertex = new ArrayList<>(s);
+		for(int i = 0; i < s; ++i)
+			toVertex.add(i, vertices.get(i).subtract(ray.get_p0()));
+
+		List<Vector> normals = new ArrayList<>(s);
+		for(int i=0;i<s;++i)
+			normals.add(i, toVertex.get(i).crossProduct(toVertex.get((i+1)%s)));
+
+		double currProduct = alignZero(ray.get_dir().dotProduct(normals.get(0)));
+		if(currProduct == 0)
+			return null;
+
+		boolean sign = currProduct > 0, currSign;
+
+		for(int i=1;i<s;++i){
+			currProduct = alignZero(ray.get_dir().dotProduct(normals.get(i)));
+			if(currProduct == 0)
+				return null;
+			currSign = currProduct > 0;
+			if(currSign != sign)
+				return null;
+		}
+
+		return intersection;
 	}
 }
