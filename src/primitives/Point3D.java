@@ -13,6 +13,19 @@ public class Point3D {
     public final static Point3D ZERO = new Point3D(0,0,0);
 
     //**The three values describing position along the respective axis.*/
+
+    public Coordinate getX() {
+        return x;
+    }
+
+    public Coordinate getY() {
+        return y;
+    }
+
+    public Coordinate getZ() {
+        return z;
+    }
+
     /**Value along the x axis.*/
     final Coordinate x;
 

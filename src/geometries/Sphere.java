@@ -55,8 +55,17 @@ public class Sphere implements Geometry{
      */
     @Override
     public List<Point3D> findIntersections(Ray ray) {
-        Vector u = _center.subtract(ray.get_p0()); //vector from ray origin to center of sphere.
-        double tm = ray.get_dir().dotProduct(u); //u`s projection along the direction of v,
+
+        Point3D p0 = ray.get_p0();
+        Vector v = ray.get_dir();
+        Point3D o = _center;
+
+        if(p0.equals(o)){
+            return  List.of(ray.getPoint(_radius));
+        }
+
+        Vector u = o.subtract(p0); //vector from ray origin to center of sphere.
+        double tm = v.dotProduct(u); //u`s projection along the direction of v,
                                                 // also the distance from the rays origin to the midpoint between the two intersections
         double distSquared = u.lengthSquared()-(tm*tm); //distance from sphere center to ray.
 
@@ -72,9 +81,9 @@ public class Sphere implements Geometry{
 
         List<Point3D> res = new ArrayList<>();
         if(t1>0)
-            res.add(ray.get_p0().add( ray.get_dir().scale(t1)));
+            res.add(ray.getPoint(t1));
         if(t2>0)
-            res.add(ray.get_p0().add( ray.get_dir().scale(t2)));
+            res.add(ray.getPoint(t2));
         return res;
     }
 

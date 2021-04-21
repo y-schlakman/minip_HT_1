@@ -89,30 +89,42 @@ public class Polygon implements Geometry {
 		return plane.getNormal(null);
 	}
 
+	/**
+	 * Finds all intersection between this polygon and a given ray.
+	 *
+	 * @param ray the ray intersecting the geometry.
+	 * @return a list including the intersection point. 'null' if there is none.
+	 */
 	@Override
 	public List<Point3D> findIntersections(Ray ray) {
+		Point3D p0 = ray.get_p0();
+		Vector v = ray.get_dir();
+
 		int s = vertices.size(); //we use this value multiple times so we save it locally to avoid many function calls.
 
 		List<Point3D> intersection = plane.findIntersections(ray);
-		if(intersection == null)
+		if(intersection == null) //Does not intersect with plane including polygon therefore does not intersect polygon.
 			return null;
 
-		List<Vector> toVertex = new ArrayList<>(s);
+		List<Vector> toVertex = new ArrayList<>(s); //Vectors used to create a 'box-ey cone' around the polygon which
+		// allows us to check whether the intersection is within or beyond each face of said polyhedra and therfore compare respective answers across each plane to find out if
+		//the point is inside them all.
+
 		for(int i = 0; i < s; ++i)
-			toVertex.add(i, vertices.get(i).subtract(ray.get_p0()));
+			toVertex.add(i, vertices.get(i).subtract(p0));
 
 		List<Vector> normals = new ArrayList<>(s);
 		for(int i=0;i<s;++i)
 			normals.add(i, toVertex.get(i).crossProduct(toVertex.get((i+1)%s)));
 
-		double currProduct = alignZero(ray.get_dir().dotProduct(normals.get(0)));
+		double currProduct = alignZero(v.dotProduct(normals.get(0)));
 		if(currProduct == 0)
 			return null;
 
 		boolean sign = currProduct > 0, currSign;
 
 		for(int i=1;i<s;++i){
-			currProduct = alignZero(ray.get_dir().dotProduct(normals.get(i)));
+			currProduct = alignZero(v.dotProduct(normals.get(i)));
 			if(currProduct == 0)
 				return null;
 			currSign = currProduct > 0;

@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import org.junit.jupiter.api.Test;
 import primitives.*;
+import java.util.List;
 
 /**
  * Unit tests for geometries.Triangle class
@@ -27,4 +28,6 @@ class TriangleTests {
         //TC01: Test that getNormal() returns the correct result
         assertTrue(normal.equals(tr.getNormal(p1))||normal.equals(tr.getNormal(p1).scale(-1)),"ERROR: getNormal() wrong result");
     }
+
+
 }

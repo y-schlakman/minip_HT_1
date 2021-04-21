@@ -92,21 +92,24 @@ public class Plane implements Geometry {
      */
     @Override
     public List<Point3D> findIntersections(Ray ray) {
-        if(q0 == ray.get_p0())
+        Point3D p0 = ray.get_p0();
+        Vector v = ray.get_dir();
+
+        if(q0.equals(p0))//Ray begins inside plane so no intersections regardless of direction.
             return null;
 
-        double nv = _normal.dotProduct(ray.get_dir());
+        double nv = _normal.dotProduct(v);
 
-        if(isZero(nv))
+        if(isZero(nv)) // ray is included inside plane (infinite intersections are not counted).
             return null;
 
-        Vector toPlane = q0.subtract(ray.get_p0());
+        Vector toPlane = q0.subtract(p0);
 
         double t = alignZero(_normal.dotProduct(toPlane) / nv);
-        if(t<=0)
+        if(t<=0) //Ray begins after plane.
             return null;
 
-        Point3D intersection = ray.get_p0().add(ray.get_dir().scale(t));
+        Point3D intersection = ray.getPoint(t);
 
         List<Point3D> res = new ArrayList<>();
         res.add(intersection);

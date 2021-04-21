@@ -10,11 +10,20 @@ import static primitives.Util.*;
  * @version 5780B updated according to new requirements
  */
 public final class Coordinate {
+
     /**
      * Coordinate value, intentionally "package-friendly" due to performance
      * constraints
      */
     final double coord;
+
+    /**
+     * getter method for value.
+     * @return coordinates double value.
+     */
+    public double getCoord() {
+        return coord;
+    }
 
     /**
      * Coordinate constructor receiving a coordinate value
