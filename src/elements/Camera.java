@@ -1,8 +1,8 @@
 package elements;
 
 import primitives.Point3D;
-import primitives.Vector;
 import primitives.Ray;
+import primitives.Vector;
 
 import static primitives.Util.isZero;
 
@@ -32,50 +32,14 @@ public class Camera {
      */
     public Camera(Point3D p0, Vector vTo, Vector vUp){
         if(!isZero(vTo.dotProduct(vUp)))
-            throw new IllegalArgumentException("ERROR: 'vTo' and 'vUp' are not orthogonal");
+            throw new IllegalArgumentException("ERROR: vTo and vUp are not orthogonal");
 
         _p0 = p0;
         _vTo=vTo.normalized();
         _vUp=vUp.normalized();
-
-        _vRight = _vTo.crossProduct(_vUp);
+        _vRight = _vTo.crossProduct(_vUp).normalize();
 
     }
-
-    //Getters for camera info.
-
-    /**
-     * Getter function fo camera position.
-     * @return Camera's position in 3dD space in the form of a 'Point3D'.
-     */
-    public Point3D getP0() {
-        return _p0;
-    }
-
-    /**
-     * Getter function for the 'to' vector pointing in the direction the camera is looking at.
-     * @return Camera's 'to' vector.
-     */
-    public Vector getvTo() {
-        return _vTo;
-    }
-
-    /**
-     * Getter function for the 'up' vector pointing relatively 'upwards' and perpendicular to the 'to' vector.
-     * @return Camera's 'up' vector.
-     */
-    public Vector getvUp() {
-        return _vUp;
-    }
-
-    /**
-     * Getter function for the 'right' vector pointing relatively 'to the right' of and perpendicular to the 'to' vector.
-     * @return Camera's 'right' vector.
-     */
-    public Vector getvRight() {
-        return _vRight;
-    }
-
 
     //Setters using method chaining.
 
@@ -87,48 +51,41 @@ public class Camera {
      * @return this instance of 'Camera' object.
      */
     public Camera setViewPlaneSize(double width, double height){
+        if(width <= 0)
+            throw new IllegalArgumentException("width must be positive");
+        if(height <= 0)
+            throw new IllegalArgumentException("height must be positive");
+
         _width = width;
         _height = height;
+
         return this;
     }
 
+    /**
+     * setter for distance property.
+     * @param distance distance of view plane from the camera.
+     * @return this instance of 'Camera' object.
+     */
     public Camera setDistance(double distance) {
+        if(distance <= 0)
+            throw new IllegalArgumentException("distance must be positive");
+
         _distance = distance;
+
         return this;
     }
 
-    public Ray constructRayThroughPixel(int nX, int nY, int j, int i){
-
-        if((j<0) || (j>=nX) || (i<0) || (i>=nY))
-            throw new IllegalArgumentException("Error: Pixel's position (in screen - space) exceeds/preceeds screen definition.");
-
-        if((nX <= 0 )|| (nY <= 0))
-            throw new IllegalArgumentException("Error: Screen is degenerate in one or more dimensions.");
-
-        //The position of the centre of the view plane in 3D space.
-        Point3D imageCentre =  _p0.add(_vTo.scale(_distance));
-
-        //Ratio of screen-to-pixel along the height and width dimensions respectively.
-        double heightRatio = _height/(double)nY;
-        double widthRatio = _width/(double)nX;
-
-        //The distance in units from the centre of the view plane to the pixel in 3D space
-        // along the width and height dimensions respectively.
-        double widthDistance = (j-(nX-1)/(double)2) * widthRatio;
-        double heightDistance = -(i-(nY-1)/(double)2) * heightRatio;
-
-
-        //The centre of this specific pixel in 3D space.
-        Point3D pixelCentre = imageCentre;
-        if(widthDistance!=0)
-            pixelCentre.add(_vRight.scale(widthDistance));
-        if(heightDistance!=0)
-            pixelCentre.add(_vUp.scale(heightDistance));
-
-        //Ray originates at the eye of the camera(p0) and points in the direction of the centre of the pixel.
-        return new Ray(_p0, pixelCentre.subtract(_p0));
+    /**
+     * constructs a ray through a pixel
+     * @param nX width of row
+     * @param nY height of column
+     * @param j column index of pixel
+     * @param i row index of pixel
+     * @return null for the moment as per instructions
+     */
+    public Ray constructRayThroughPixel(int nX, int nY, int j, int i) {
+        //temporarily return null as per instructions
+        return null;
     }
-
-
-
 }
