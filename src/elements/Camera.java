@@ -108,9 +108,9 @@ public class Camera {
         //The centre of this specific pixel in 3D space.
         Point3D pixelCentre = imageCentre;
         if(widthDistance!=0)
-            pixelCentre.add(_vRight.scale(widthDistance));
+            pixelCentre = pixelCentre.add(_vRight.scale(widthDistance));
         if(heightDistance!=0)
-            pixelCentre.add(_vUp.scale(heightDistance));
+            pixelCentre = pixelCentre.add(_vUp.scale(heightDistance));
 
         //Ray originates at the eye of the camera(p0) and points in the direction of the centre of the pixel.
         return new Ray(_p0, pixelCentre.subtract(_p0));
