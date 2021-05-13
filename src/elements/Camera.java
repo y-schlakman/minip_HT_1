@@ -82,10 +82,37 @@ public class Camera {
      * @param nY height of column
      * @param j column index of pixel
      * @param i row index of pixel
-     * @return null for the moment as per instructions
+     * @return Ray originating at eye of camera and pointing towards the centre of the pixel in the j`th column and i`th row.
      */
-    public Ray constructRayThroughPixel(int nX, int nY, int j, int i) {
-        //temporarily return null as per instructions
-        return null;
+    public Ray constructRayThroughPixel(int nX, int nY, int j, int i){
+
+        if((nX <= 0 )|| (nY <= 0))
+            throw new IllegalArgumentException("Error: Screen is degenerate in one or more dimensions.");
+
+        if((j<0) || (j>=nX) || (i<0) || (i>=nY))
+            throw new IllegalArgumentException("Error: Pixel's position (in screen - space) exceeds/preceeds screen definition.");
+
+        //The position of the centre of the view plane in 3D space.
+        Point3D imageCentre =  _p0.add(_vTo.scale(_distance));
+
+        //Ratio of screen-to-pixel along the height and width dimensions respectively.
+        double heightRatio = _height/(double)nY;
+        double widthRatio = _width/(double)nX;
+
+        //The distance in units from the centre of the view plane to the pixel in 3D space
+        // along the width and height dimensions respectively.
+        double widthDistance = (j-(nX-1)/(double)2) * widthRatio;
+        double heightDistance = -(i-(nY-1)/(double)2) * heightRatio;
+
+
+        //The centre of this specific pixel in 3D space.
+        Point3D pixelCentre = imageCentre;
+        if(widthDistance!=0)
+            pixelCentre.add(_vRight.scale(widthDistance));
+        if(heightDistance!=0)
+            pixelCentre.add(_vUp.scale(heightDistance));
+
+        //Ray originates at the eye of the camera(p0) and points in the direction of the centre of the pixel.
+        return new Ray(_p0, pixelCentre.subtract(_p0));
     }
 }
