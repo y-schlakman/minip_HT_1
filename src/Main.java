@@ -4,7 +4,7 @@ import static java.lang.System.out;
 import static primitives.Util.*;
 
 /**
- * submission of assignment 2.
+ * submission of assignment 4.
  * Yosef Schlakman - 213661002 - yschlakman@gmail.com
  * Eli Howitt - 325538411 - elihowitt1@gmail.com
  * -----------------------------------------------------
