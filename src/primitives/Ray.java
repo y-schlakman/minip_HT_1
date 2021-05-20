@@ -1,5 +1,7 @@
 package primitives;
 
+import java.util.List;
+
 import static primitives.Util.isZero;
 /**
  * The Ray class is used to represent a mathematical ray stemming at a point p0 in 3 dimensional cartesian space and
@@ -50,6 +52,28 @@ public class Ray {
             return _p0;
         }
         return _p0.add(_dir.scale(t));
+    }
+
+    /**
+     * finds the point which is closest to ray's head from list of points
+     * @param points list of points to check
+     * @return closest point from points to ray's head
+     */
+    public Point3D findClosestPoint(List<Point3D> points){
+        //if list is empty return null
+        if(points.size() == 0)
+            return null;
+
+        //loop through the list and find the index of closest point
+        int closestIndex = 0;
+        for(int i = 1; i < points.size(); ++i)
+        {
+            if(points.get(i).distance(_p0) < points.get(closestIndex).distance(_p0))
+                closestIndex = i;
+        }
+
+        //return the closest point
+        return points.get(closestIndex);
     }
 
     @Override
