@@ -6,7 +6,7 @@ import primitives.*;
  * class that represents a Cylinder in 3d space
  * @author Yosi and Eli
  */
-public class Cylinder extends Tube implements Geometry {
+public class Cylinder extends Tube {
 
     final private double _height;
 

@@ -11,7 +11,7 @@ import static primitives.Util.*;
  * 
  * @author Dan
  */
-public class Polygon implements Geometry {
+public class Polygon extends Geometry {
 	/**
 	 * List of polygon's vertices
 	 */
@@ -90,7 +90,7 @@ public class Polygon implements Geometry {
 	}
 
 	/**
-	 * Finds all intersection between this polygon and a given ray.
+	 * Finds the intersection point between this polygon and a given ray (should there be one).
 	 *
 	 * @param ray the ray intersecting the geometry.
 	 * @return a list including the intersection point. 'null' if there is none.
@@ -133,5 +133,24 @@ public class Polygon implements Geometry {
 		}
 
 		return intersection;
+	}
+
+	/**
+	 * Finds the intersection point between this polygon and a given ray (should there be one),
+	 * 		with respect to this polygon as the intersections's geometry.
+	 *
+	 * @param ray the ray intersecting the geometry.
+	 * @return a list including the intersection point with respect to this polygon as its geometry.
+	 * 		'null' if there is none.
+	 */
+	@Override
+	public List<GeoPoint> findGeoIntersections(Ray ray) {
+		List<Point3D> intersections = this.findIntersections(ray);
+		if(intersections == null)
+			return null;
+
+		List<GeoPoint> res = new ArrayList();
+		res.add(new GeoPoint(this, intersections.get(0)));
+		return res;
 	}
 }

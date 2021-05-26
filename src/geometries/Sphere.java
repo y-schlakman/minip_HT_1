@@ -9,7 +9,7 @@ import java.util.ArrayList;
  * class that represents a Sphere in 3d space
  * @author Yosi and Eli
  */
-public class Sphere implements Geometry{
+public class Sphere extends Geometry{
 
     final private Point3D _center;
     final private double _radius;
@@ -84,6 +84,27 @@ public class Sphere implements Geometry{
             res.add(ray.getPoint(t1));
         if(t2>0)
             res.add(ray.getPoint(t2));
+        return res;
+    }
+
+    /**
+     * Finds all intersection points between this sphere and a given ray (should there be any),
+     *      with respect to this sphere as the intersections's geometry.
+     *
+     * @param ray the ray intersecting the geometry.
+     * @return a list of the intersection points with respect to this sphere as their geometry.
+     *      if there are no intersections null will be returned.
+     */
+    @Override
+    public List<GeoPoint> findGeoIntersections(Ray ray) {
+        List<Point3D> intersections = this.findIntersections(ray);
+        if(intersections == null)
+            return null;
+
+        List<GeoPoint> res = new ArrayList();
+        for(Point3D p : intersections)
+            res.add(new GeoPoint(this, p));
+
         return res;
     }
 

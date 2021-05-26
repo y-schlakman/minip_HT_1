@@ -1,5 +1,7 @@
 package primitives;
 
+import geometries.Intersectable.*;
+
 import java.util.List;
 
 import static primitives.Util.isZero;
@@ -61,15 +63,51 @@ public class Ray {
      */
     public Point3D findClosestPoint(List<Point3D> points){
         //if list is empty return null
+        if(points == null)
+            return null;
         if(points.size() == 0)
             return null;
 
         //loop through the list and find the index of closest point
         int closestIndex = 0;
+        double closestDistance = points.get(0).distanceSquared(_p0), currDistance;
         for(int i = 1; i < points.size(); ++i)
         {
-            if(points.get(i).distance(_p0) < points.get(closestIndex).distance(_p0))
+            currDistance = points.get(i).distanceSquared(_p0);
+            if(currDistance < closestDistance)
+            {
                 closestIndex = i;
+                closestDistance = currDistance;
+            }
+        }
+
+        //return the closest point
+        return points.get(closestIndex);
+    }
+
+    /** Finds the nearest point (with respect to its corresponding geometry) given a list.
+     *
+     * @param points the list of points to search through.
+     * @return The nearest point to the ray's origin.
+     */
+    public GeoPoint findClosestGeoPoint(List<GeoPoint> points){
+        //if list is empty return null
+        if(points == null)
+            return null;
+        if(points.size() == 0)
+            return null;
+
+        //loop through the list and find the index of closest point
+        int closestIndex = 0;
+        double closestDistance = points.get(0).point.distanceSquared(_p0), currDistance;
+        for(int i = 1; i < points.size(); ++i)
+        {
+            currDistance = points.get(i).point.distanceSquared(_p0);
+            if(currDistance < closestDistance)
+            {
+                closestIndex = i;
+                closestDistance = currDistance;
+            }
         }
 
         //return the closest point

@@ -11,7 +11,7 @@ import java.util.List;
  *
  * @author Yosi and Eli
  */
-public class Plane implements Geometry {
+public class Plane extends Geometry {
 
     final private Point3D q0;
     final private Vector _normal;
@@ -113,6 +113,25 @@ public class Plane implements Geometry {
 
         List<Point3D> res = new ArrayList<>();
         res.add(intersection);
+        return res;
+    }
+
+    /**
+     * Finds the intersection point (should one exist) between the plane and a given ray,
+     * with respect to this plane as the intersection's geometry.
+     *
+     * @param ray the ray intersecting the geometry.
+     * @return a list containing the intersection point with respect to this plane as the intersection's geometry.
+     *      If there is no intersection null will be returned.
+     */
+    @Override
+    public List<GeoPoint> findGeoIntersections(Ray ray) {
+        List<Point3D> intersections = this.findIntersections(ray);
+        if(intersections == null)
+            return null;
+
+        List<GeoPoint> res = new ArrayList();
+        res.add(new GeoPoint(this, intersections.get(0)));
         return res;
     }
 

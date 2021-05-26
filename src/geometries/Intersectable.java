@@ -12,6 +12,27 @@ import java.util.*;
 
 public interface Intersectable {
 
+    public static class GeoPoint {
+        public Geometry geometry;
+        public Point3D point;
+
+        public GeoPoint(Geometry geometry_, Point3D point_)
+        {
+            geometry = geometry_;
+            point = point_;
+        }
+
+        @Override
+        public boolean equals(Object obj) {
+            if (this == obj) return true;
+            if (obj == null) return false;
+            if (!(obj instanceof GeoPoint)) return false;
+            GeoPoint other = (GeoPoint)obj;
+
+            return geometry.equals(other.geometry) && point.equals(other.point);
+        }
+    }
+
     /**
      * Finds all intersections of the implementing geometry with a given ray.
      *
@@ -19,4 +40,12 @@ public interface Intersectable {
      * @return a list of points of intersection.
      */
     List<Point3D> findIntersections(Ray ray);
+
+    /**
+     * Finds all intersections of the implementing geometry with a given ray, with respect to said geometry.
+     *
+     * @param ray the ray intersecting the geometry.
+     * @return a list of points of intersection, with respect to the implementing geometry.
+     */
+    List<GeoPoint> findGeoIntersections(Ray ray);
 }

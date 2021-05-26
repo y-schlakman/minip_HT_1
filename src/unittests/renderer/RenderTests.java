@@ -76,7 +76,7 @@ public class RenderTests {
      * Produce a scene with basic 3D model - including individual lights of the bodies
      * and render it into a png image with a grid
      */
-    /*
+
     @Test
     public void basicRenderMultiColorTest() {
         Scene scene = new Scene("Test scene")//
@@ -101,5 +101,5 @@ public class RenderTests {
         render.renderImage();
         render.printGrid(100, new Color(java.awt.Color.WHITE));
         render.writeToImage();
-    }*/
+    }
 }

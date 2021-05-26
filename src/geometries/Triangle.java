@@ -6,7 +6,7 @@ import primitives.*;
  * class that represents a Triangle in 3d space
  * @author Yosi and Eli
  */
-public class Triangle extends Polygon implements Geometry {
+public class Triangle extends Polygon {
 
     /**
      * constructor for triangle. gets three points representing the triangle's vertices.

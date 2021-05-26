@@ -1,12 +1,13 @@
 package renderer;
 
+import geometries.Intersectable;
 import primitives.Color;
 import primitives.Point3D;
 import primitives.Ray;
 import scene.Scene;
 
 import java.util.List;
-
+import geometries.Intersectable.GeoPoint;
 /**
  * child class of RayTracerBase, that is used to determine color of a view plane pixel from which we casted a ray.
  *
@@ -38,4 +39,7 @@ public class RayTracerBasic extends RayTracerBase {
     private Color calcColor(Point3D point) {
         return scene.ambientLight.getIntensity();
     }
+    /*private Color calcColor(GeoPoint point) {
+        return scene.ambientLight.getIntensity() + point.geometry.getEmission();
+    }*/
 }
