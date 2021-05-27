@@ -84,14 +84,17 @@ public class Plane extends Geometry {
         return _normal;
     }
 
+
     /**
-     * Finds the intersection point (should one exist) between the plane and a given ray.
+     * Finds the intersection point (should one exist) between the plane and a given ray,
+     * with respect to this plane as the intersection's geometry.
      *
      * @param ray the ray intersecting the geometry.
-     * @return a list containing the intersection point. (if there is no intersection null will be returned).
+     * @return a list containing the intersection point with respect to this plane as the intersection's geometry.
+     *      If there is no intersection null will be returned.
      */
     @Override
-    public List<Point3D> findIntersections(Ray ray) {
+    public List<GeoPoint> findGeoIntersections(Ray ray) {
         Point3D p0 = ray.get_p0();
         Vector v = ray.get_dir();
 
@@ -111,29 +114,13 @@ public class Plane extends Geometry {
 
         Point3D intersection = ray.getPoint(t);
 
-        List<Point3D> res = new ArrayList<>();
-        res.add(intersection);
-        return res;
+        List<GeoPoint> lgp = new ArrayList<GeoPoint>();
+        lgp.add(new GeoPoint(this, intersection));
+
+        return lgp;
     }
 
-    /**
-     * Finds the intersection point (should one exist) between the plane and a given ray,
-     * with respect to this plane as the intersection's geometry.
-     *
-     * @param ray the ray intersecting the geometry.
-     * @return a list containing the intersection point with respect to this plane as the intersection's geometry.
-     *      If there is no intersection null will be returned.
-     */
-    @Override
-    public List<GeoPoint> findGeoIntersections(Ray ray) {
-        List<Point3D> intersections = this.findIntersections(ray);
-        if(intersections == null)
-            return null;
 
-        List<GeoPoint> res = new ArrayList();
-        res.add(new GeoPoint(this, intersections.get(0)));
-        return res;
-    }
 
     @Override
     public String toString() {

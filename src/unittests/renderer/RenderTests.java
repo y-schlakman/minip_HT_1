@@ -1,8 +1,7 @@
 package renderer;
 
-import static org.junit.jupiter.api.Assertions.*;
-
 import org.junit.jupiter.api.Test;
+
 import elements.*;
 import geometries.*;
 import primitives.*;
@@ -49,11 +48,10 @@ public class RenderTests {
         render.printGrid(100, new Color(java.awt.Color.YELLOW));
         render.writeToImage();
     }
-    /*
+
     /**
      * Test for XML based scene - for bonus
      */
-    /*
     @Test
     public void basicRenderXml() {
         Scene scene = new Scene("XML Test scene");
@@ -76,7 +74,6 @@ public class RenderTests {
      * Produce a scene with basic 3D model - including individual lights of the bodies
      * and render it into a png image with a grid
      */
-
     @Test
     public void basicRenderMultiColorTest() {
         Scene scene = new Scene("Test scene")//

@@ -24,22 +24,20 @@ public class RayTracerBasic extends RayTracerBase {
 
     @Override
     public Color traceRay(Ray ray) {
-        List<Point3D> intersections = scene.geometries.findIntersections(ray);
+        List<GeoPoint> intersections = scene.geometries.findGeoIntersections(ray);
         if (intersections == null)
             return scene.background;
-        Point3D closest = ray.findClosestPoint(intersections);
+        GeoPoint closest = ray.findClosestGeoPoint(intersections);
         return calcColor(closest);
     }
 
     /**
-     * find the color of a point
+     * find the color of a point.
      * @param point the point to find the color of
      * @return the color of the point
      */
-    private Color calcColor(Point3D point) {
-        return scene.ambientLight.getIntensity();
+
+    private Color calcColor(GeoPoint point) {
+        return scene.ambientLight.getIntensity().add(point.geometry.getEmission());
     }
-    /*private Color calcColor(GeoPoint point) {
-        return scene.ambientLight.getIntensity() + point.geometry.getEmission();
-    }*/
 }

@@ -3,6 +3,7 @@ package geometries;
 import primitives.*;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * interface to be implemented by all geometries.
@@ -39,7 +40,12 @@ public interface Intersectable {
      * @param ray the ray intersecting the geometry.
      * @return a list of points of intersection.
      */
-    List<Point3D> findIntersections(Ray ray);
+    default List<Point3D> findIntersections(Ray ray) {
+        var geoList = findGeoIntersections(ray);
+        return geoList == null ? null
+                : geoList.stream().map(gp -> gp.point).collect(Collectors.toList());
+    }
+
 
     /**
      * Finds all intersections of the implementing geometry with a given ray, with respect to said geometry.

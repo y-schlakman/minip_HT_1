@@ -90,17 +90,20 @@ public class Polygon extends Geometry {
 	}
 
 	/**
-	 * Finds the intersection point between this polygon and a given ray (should there be one).
+	 * Finds the intersection point between this polygon and a given ray (should there be one),
+	 * 		with respect to this polygon as the intersections's geometry.
 	 *
 	 * @param ray the ray intersecting the geometry.
-	 * @return a list including the intersection point. 'null' if there is none.
+	 * @return a list including the intersection point with respect to this polygon as its geometry.
+	 * 		'null' if there is none.
 	 */
 	@Override
-	public List<Point3D> findIntersections(Ray ray) {
+	public List<GeoPoint> findGeoIntersections(Ray ray) {
+
 		Point3D p0 = ray.get_p0();
 		Vector v = ray.get_dir();
 
-		int s = vertices.size(); //we use this value multiple times so we save it locally to avoid many function calls.
+		int s = vertices.size(); //we use this value mubltiple times so we save it locally to avoid many function calls.
 
 		List<Point3D> intersection = plane.findIntersections(ray);
 		if(intersection == null) //Does not intersect with plane including polygon therefore does not intersect polygon.
@@ -132,25 +135,8 @@ public class Polygon extends Geometry {
 				return null;
 		}
 
-		return intersection;
-	}
-
-	/**
-	 * Finds the intersection point between this polygon and a given ray (should there be one),
-	 * 		with respect to this polygon as the intersections's geometry.
-	 *
-	 * @param ray the ray intersecting the geometry.
-	 * @return a list including the intersection point with respect to this polygon as its geometry.
-	 * 		'null' if there is none.
-	 */
-	@Override
-	public List<GeoPoint> findGeoIntersections(Ray ray) {
-		List<Point3D> intersections = this.findIntersections(ray);
-		if(intersections == null)
-			return null;
-
 		List<GeoPoint> res = new ArrayList();
-		res.add(new GeoPoint(this, intersections.get(0)));
+		res.add(new GeoPoint(this, intersection.get(0)));
 		return res;
 	}
 }

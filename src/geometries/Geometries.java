@@ -28,9 +28,10 @@ public class Geometries implements Intersectable {
      * @param ray the ray intersecting the geometry.
      * @return list of intersection points. (null if none exist).
      */
+    /*
     @Override
     public List<Point3D> findIntersections(Ray ray) {
-        if (geometries.isEmpty())
+        if(geometries==null || geometries.isEmpty())
             return null;
 
         List<Point3D> res;
@@ -51,7 +52,7 @@ public class Geometries implements Intersectable {
             i++;
         }
         return res;
-    }
+    }*/
 
     /**
      * Finds intersections of all the geometries in the scene with given ray,
@@ -63,6 +64,9 @@ public class Geometries implements Intersectable {
      */
     @Override
     public List<GeoPoint> findGeoIntersections(Ray ray) {
+        if(geometries==null || geometries.isEmpty())
+            return null;
+
         List<GeoPoint> res, tmp;
         int i=0;
         do {

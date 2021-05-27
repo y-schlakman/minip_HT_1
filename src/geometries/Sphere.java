@@ -48,25 +48,27 @@ public class Sphere extends Geometry{
     }
 
     /**
-     * Finds all intersection between this sphere and a given ray.
+     * Finds all intersection points between this sphere and a given ray (should there be any),
+     *      with respect to this sphere as the intersections's geometry.
      *
      * @param ray the ray intersecting the geometry.
-     * @return a list of the intersection points.  (if there are no intersections null will be returned).
+     * @return a list of the intersection points with respect to this sphere as their geometry.
+     *      if there are no intersections null will be returned.
      */
     @Override
-    public List<Point3D> findIntersections(Ray ray) {
+    public List<GeoPoint> findGeoIntersections(Ray ray) {
 
         Point3D p0 = ray.get_p0();
         Vector v = ray.get_dir();
         Point3D o = _center;
 
         if(p0.equals(o)){
-            return  List.of(ray.getPoint(_radius));
+            return  List.of(new GeoPoint(this, ray.getPoint(_radius)));
         }
 
         Vector u = o.subtract(p0); //vector from ray origin to center of sphere.
         double tm = v.dotProduct(u); //u`s projection along the direction of v,
-                                                // also the distance from the rays origin to the midpoint between the two intersections
+        // also the distance from the rays origin to the midpoint between the two intersections
         double distSquared = u.lengthSquared()-(tm*tm); //distance from sphere center to ray.
 
         if(distSquared >= _radius*_radius) //ray is further than a radius away from the center - no intersections.
@@ -79,32 +81,11 @@ public class Sphere extends Geometry{
         if(t1<=0 && t2<=0)
             return null;
 
-        List<Point3D> res = new ArrayList<>();
+        List<GeoPoint> res = new ArrayList<>();
         if(t1>0)
-            res.add(ray.getPoint(t1));
+            res.add(new GeoPoint(this, ray.getPoint(t1)));
         if(t2>0)
-            res.add(ray.getPoint(t2));
-        return res;
-    }
-
-    /**
-     * Finds all intersection points between this sphere and a given ray (should there be any),
-     *      with respect to this sphere as the intersections's geometry.
-     *
-     * @param ray the ray intersecting the geometry.
-     * @return a list of the intersection points with respect to this sphere as their geometry.
-     *      if there are no intersections null will be returned.
-     */
-    @Override
-    public List<GeoPoint> findGeoIntersections(Ray ray) {
-        List<Point3D> intersections = this.findIntersections(ray);
-        if(intersections == null)
-            return null;
-
-        List<GeoPoint> res = new ArrayList();
-        for(Point3D p : intersections)
-            res.add(new GeoPoint(this, p));
-
+            res.add(new GeoPoint(this, ray.getPoint(t2)));
         return res;
     }
 
