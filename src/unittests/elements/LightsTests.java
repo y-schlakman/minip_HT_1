@@ -86,6 +86,30 @@ public class LightsTests {
     }
 
     /**
+     * Produce a picture of a sphere lit by many light sources.
+     */
+    @Test
+    public void sphereAllLights(){
+        scene1.geometries.add(sphere);
+
+        scene1.lights.add(new SpotLight(new Color(500, 300, 0), new Point3D(-125, 10, 50), new Vector(1, 0, -1)) //
+                .setkL(0.00001).setkQ(0.00000001));
+
+        scene1.lights.add(new PointLight(new Color(500, 300, 0), new Point3D(0, 150, 25))//
+              .setkL(0.00001).setkQ(0.000001));
+
+        scene1.lights.add(new DirectionalLight(new Color(500, 300, 0), new Vector(-1.5, 1, -1)));
+
+        ImageWriter imageWriter = new ImageWriter("lightSphereAll", 500, 500);
+        Render render = new Render()//
+                .setImageWriter(imageWriter) //
+                .setCamera(camera1) //
+                .setRayTracer(new RayTracerBasic(scene1));
+        render.renderImage();
+        render.writeToImage();
+    }
+
+    /**
      * Produce a picture of a two triangles lighted by a directional light
      */
     @Test
@@ -123,7 +147,7 @@ public class LightsTests {
     }
 
     /**
-     * Produce a picture of a two triangles lighted by a spot light
+     * Produce a picture of a two triangles lighted by a spot light.
      */
     @Test
     public void trianglesSpot() {
@@ -141,4 +165,28 @@ public class LightsTests {
         render.writeToImage();
     }
 
+    /**
+     * Produce a picture of two triangles lit by many light sources.
+     */
+    @Test
+    public void trianglesAll(){
+        scene2.geometries.add(triangle1.setMaterial(new Material().setkD(0.5).setkS(0.5).setnShininess(300)),
+                triangle2.setMaterial(new Material().setkD(0.5).setkS(0.5).setnShininess(300)));
+
+        scene2.lights.add(new SpotLight(new Color(500, 250, 250), new Point3D(10, -10, -130), new Vector(-4, -2, -1)) //
+                .setkL(0.0001).setkQ(0.000005));
+
+        scene2.lights.add(new PointLight(new Color(500, 250, 250), new Point3D(50, -10, -130)) //
+                .setkL(0.0005).setkQ(0.0005));
+
+        scene2.lights.add(new DirectionalLight(new Color(300, 150, 150), new Vector(5, 0.5, -5)));
+
+        ImageWriter imageWriter = new ImageWriter("lightTrianglesAll", 500, 500);
+        Render render = new Render()//
+                .setImageWriter(imageWriter) //
+                .setCamera(camera2) //
+                .setRayTracer(new RayTracerBasic(scene2));
+        render.renderImage();
+        render.writeToImage();
+    }
 }
