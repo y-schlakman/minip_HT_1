@@ -12,6 +12,27 @@ public abstract class Geometry implements Intersectable {
     //Variable for the emission light of a geometry.
     protected Color emission = Color.BLACK;
 
+    //Material properties of this geometry object.
+    protected Material material = new Material();
+
+    /**
+     * Getter methode for material field.
+     * @return The 'material' field.
+     */
+    public Material getMaterial(){
+        return material;
+    }
+
+    /**
+     * Setter method for material properties.
+     * @param material Desired new material values.
+     * @return Instance of current geometry.
+     */
+    public Geometry setMaterial(Material material){
+        this.material = material;
+        return this;
+    }
+
     /**
      * Setter method for emission colour.
      * @param emission the new colour.

@@ -7,14 +7,13 @@ import primitives.Color;
  *
  * @author Yosi and Eli
  */
-public class AmbientLight {
-    private Color intensity;
+public class AmbientLight extends Light {
 
     /**
-     * default constructor for AmbientLight makes intensity black
+     * default constructor for AmbientLight makes intensity black.
      */
     public AmbientLight(){
-        intensity = Color.BLACK;
+        super(Color.BLACK);
     }
 
     /**
@@ -22,15 +21,6 @@ public class AmbientLight {
      * @param iA color of light
      * @param kA strength factor
      */
-    public AmbientLight(Color iA, double kA){
-        intensity = iA.scale(kA);
-    }
+    public AmbientLight(Color iA, double kA){ super(iA.scale(kA)); }
 
-    /**
-     * getter for intensity
-     * @return intensity value
-     */
-    public Color getIntensity() {
-        return intensity;
-    }
 }
