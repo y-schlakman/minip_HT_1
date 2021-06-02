@@ -17,6 +17,12 @@ import static primitives.Util.alignZero;
  */
 public class RayTracerBasic extends RayTracerBase {
     /**
+     * delta value to move shade checking rays by, so that we don't cast
+     * them from inside objects or behind their surface
+     */
+    private static final double DELTA = 0.1;
+
+    /**
      * constructor that gets a scene
      * @param scene the scene
      */
@@ -64,9 +70,11 @@ public class RayTracerBasic extends RayTracerBase {
             Vector l = lightSource.getL(intersection.point);
             double nl = alignZero(n.dotProduct(l));
             if (nl * nv > 0) { // sign(nl) == sing(nv)
+                if (unshaded(lightSource, l, n, intersection)) {
                 Color lightIntensity = lightSource.getIntensity(intersection.point);
                 color = color.add(calcDiffusive(kd, l, n, lightIntensity),
                         calcSpecular(ks, l, n, v, nShininess, lightIntensity));
+                }
             }
         }
         return color;
@@ -100,5 +108,42 @@ public class RayTracerBasic extends RayTracerBase {
     private Color calcSpecular(double ks, Vector l, Vector n, Vector v, int nShininess, Color lightIntensity) {
         Vector reflectance = l.subtract(n.scale(l.dotProduct(n)).scale(2)).normalize();//according to the presentation: r = l - 2 * (l * n) * n
         return lightIntensity.scale(ks * Math.pow(Math.max(0, v.scale(-1).dotProduct(reflectance)), nShininess));
+    }
+
+    /**
+     * checks if a given point is shaded from a given light source by another object in the scene
+     * @param l the direction of the light
+     * @param n normal vector from the point
+     * @param gp geo-point representing the point for which we are checking if it is shaded from the light
+     * @return true if unshaded by another object and false if shaded
+     */
+    private boolean unshaded(LightSource light, Vector l, Vector n, GeoPoint gp){
+        //cast ray from a little bit point + DELTA over the surface
+        Vector lightDirection = l.scale(-1); // from point to light source
+        Vector delta = n.scale(n.dotProduct(lightDirection) > 0 ? DELTA : - DELTA);
+        Point3D point = gp.point.add(delta);
+        Ray lightRay = new Ray(point, lightDirection);
+
+        //get intersections between the point and the light source
+        List<GeoPoint> intersections = scene.geometries.findGeoIntersections(lightRay);
+
+        //if there are no intersections between the object and the light return true
+        if (intersections == null){
+            return true;
+        }
+
+        /*
+          check if intersection is actually between the light and the point
+          or if it's behind the light source and therefore not shading the object from the light
+         */
+        double lightDistance = light.getDistance(gp.point);
+        for (GeoPoint shadeIntersection : intersections) {
+            //if intersection is between point and light - return false
+            if (alignZero(shadeIntersection.point.distance(gp.point) - lightDistance) <= 0){
+                return false;
+            }
+        }
+        //the intersection is behind the light source - so return true
+        return true;
     }
 }
