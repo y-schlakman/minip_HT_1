@@ -56,30 +56,29 @@ public class Geometries implements Intersectable {
 
     /**
      * Finds intersections of all the geometries in the scene with given ray,
-     *      with respect to the intersection's geometry.
+     * with respect to the intersection's geometry.
      *
      * @param ray the ray intersecting the geometry.
      * @return list of intersection points with respect to their corresponding geometry.
-     *      (null if none exist).
+     * (null if none exist).
      */
     @Override
     public List<GeoPoint> findGeoIntersections(Ray ray) {
-        if(geometries==null || geometries.isEmpty())
+        if (geometries == null || geometries.isEmpty())
             return null;
 
         List<GeoPoint> res, tmp;
-        int i=0;
+        int i = 0;
         do {
-            res=geometries.get(i).findGeoIntersections(ray);
+            res = geometries.get(i).findGeoIntersections(ray);
             i++;
-        }while(res==null && i<geometries.size());
-        if(res==null)
+        } while (res == null && i < geometries.size());
+        if (res == null)
             return null;
 
-        while(i<geometries.size())
-        {
+        while (i < geometries.size()) {
             tmp = geometries.get(i).findGeoIntersections(ray);
-            if(tmp!=null)
+            if (tmp != null)
                 res.addAll(tmp);
             i++;
         }
