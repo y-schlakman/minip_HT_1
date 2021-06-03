@@ -3,6 +3,7 @@
  */
 package lights;
 
+import geometries.Polygon;
 import org.junit.jupiter.api.Test;
 
 import elements.*;
@@ -11,6 +12,10 @@ import geometries.Triangle;
 import primitives.*;
 import renderer.*;
 import scene.Scene;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * Tests for reflection and transparency functionality, test for partial shadows
@@ -118,5 +123,146 @@ public class ReflectionRefractionTests {
 
         render.renderImage();
         render.writeToImage();
+    }
+
+    /**
+     * Rotates a vector around the x-axis.
+     * @param v The vector to be rotated.
+     * @param angle The angle of rotation.
+     * @return The resultant vector.
+     */
+    private Vector RotateX(Vector v, double angle){
+        Point3D head = v.getHead();
+        double x = head.getX().getCoord(), y= head.getY().getCoord(), z= head.getZ().getCoord();
+        double s = Math.sin(angle), c = Math.cos(angle);
+        return new Vector(x, y*c - z*s, y*s + z*c);
+    }
+
+    /**
+     * Rotates a vector around the y-axis.
+     * @param v The vector to be rotated.
+     * @param angle The angle of rotation.
+     * @return The resultant vector.
+     */
+    private Vector RotateY(Vector v, double angle){
+        Point3D head = v.getHead();
+        double x = head.getX().getCoord(), y= head.getY().getCoord(), z= head.getZ().getCoord();
+        double s = Math.sin(angle), c = Math.cos(angle);
+        return new Vector(x*c + z*s, y, -x*s + z*c);
+    }
+
+    /**
+     * Rotates a vector around the z-axis.
+     * @param v The vector to be rotated.
+     * @param angle The angle of rotation.
+     * @return The resultant vector.
+     */
+    private Vector RotateZ(Vector v, double angle){
+        Point3D head = v.getHead();
+        double x = head.getX().getCoord(), y= head.getY().getCoord(), z= head.getZ().getCoord();
+        double s = Math.sin(angle), c = Math.cos(angle);
+        return new Vector(x*c - y*s, x*s + y*c, z);
+    }
+
+    /**
+     * Produces a model of the our solar system showcasing all lighting effects we have.
+     */
+    @Test
+    public void solarSystemTest(){
+
+        double xAngle = Math.toRadians(-13);//Looking down 4.5 degrees.
+        double yAngle = Math.toRadians(-36);//Looking 8 degrees to the left.
+        double zAngle = Math.toRadians(0);//Rotation around z axis is like having ones head stay in place ,
+        // and spin his legs around him without turning him away from what hes looking at.
+
+        Vector to = RotateZ(RotateY(RotateX(new Vector(0,0,-1), xAngle), yAngle), zAngle);
+        Vector up = RotateZ(RotateY(RotateX(new Vector(0,1,0), xAngle), yAngle), zAngle);
+
+        double dist = 7E3;//Factor of distance of camera to scene, used to control view maintaining the desired angle.
+        Camera camera = new Camera(new Point3D(-6.3*dist, 3*dist, 10*dist), to, up) //
+                .setViewPlaneSize(200, 200).setDistance(1000);
+
+
+        //scene.setAmbientLight(new AmbientLight(new Color(java.awt.Color.WHITE), 0.15));
+
+        //Lists of planets radii and colour.
+        List<Double> radii = new ArrayList<Double>(Arrays.<Double>asList(8d, 1d, 2d, 3d, 1.5d, 4d, 3.5d, 2d, 2.5d, 1d));
+        List<Color> colors = new ArrayList<Color>(Arrays.<Color>asList(
+                new Color(java.awt.Color.YELLOW), //Sun
+                new Color(java.awt.Color.DARK_GRAY), //Mercury
+                new Color(232, 104, 137), //Venus
+                new Color(125,232,240), //Earth
+                new Color(201,97,48), //Mars
+                new Color(212,166,68), //Jupiter
+                new Color(240,205,129), //Saturn
+                new Color(62,237,220), //Uranus
+                new Color(63,58,189), //Neptune
+                new Color(195,199,70) //Pluto
+        ));
+
+        //First adding the sun as it has special definitions.
+        double planetScale = 1E2;
+        scene.geometries.add(
+                new Sphere(new Point3D(0,0,0), radii.get(0) *planetScale) //Sun
+                        .setEmission(colors.get(0).reduce(3))
+                        .setMaterial(new Material().setkD(0.3).setkS(0).setnShininess(0).setkT(0.95))
+        );
+
+
+        double planetDistance = 6.5;//Distance between planets.
+        Point3D pos, prevPos = new Point3D(0,0,0);
+        //Looping through planets and adding them.
+        for(int i=1;i<10;++i){
+            pos = prevPos.add(new Vector(0,0,1).scale(planetScale*(radii.get(i-1) + planetDistance)));
+            pos = RotateY(new Vector(pos), 0.04*i).getHead();
+            scene.geometries.add(
+                    new Sphere(pos, radii.get(i)*planetScale)
+                            .setEmission(colors.get(i).reduce(1))
+                            .setMaterial(new Material().setkD(2.767676544).setkS(0))
+            );
+            prevPos = pos;
+        }
+
+        //Depth of mirror plane.
+        double zPlane = -(radii.get(0)*planetScale + 300);
+
+        //Room dimensions.
+        double roomHeight = 6E3, roomWidth = 1.5E4, roomDepth = 8E3, xPush = 5E3;
+
+        //Room walls.
+        scene.geometries.add( //
+                new Polygon(new Point3D(-roomWidth/2 + xPush, -roomHeight/2, zPlane), new Point3D(-roomWidth/2 + xPush, roomHeight/2, zPlane),
+                        new Point3D(roomWidth/2 + xPush, roomHeight/2, zPlane), new Point3D(roomWidth/2 + xPush, -roomHeight/2, zPlane))
+                        .setEmission(new Color(java.awt.Color.BLACK).scale(0.5))
+                        .setMaterial(new Material().setkD(0.25).setkS(0.25).setnShininess(20).setkR(0.5)),
+
+                new Polygon(new Point3D(-roomWidth/2 + xPush, -roomHeight/2, zPlane), new Point3D(roomWidth/2 + xPush, -roomHeight/2, zPlane),
+                        new Point3D(roomWidth/2 + xPush, -roomHeight/2, zPlane + roomDepth), new Point3D(-roomWidth/2 + xPush, -roomHeight/2, zPlane + roomDepth))
+                        .setEmission(new Color(java.awt.Color.GREEN).scale(0.25))
+                        .setMaterial(new Material().setkD(0.5).setkS(0.5).setnShininess(50))
+
+        );
+
+        //Light sources.
+        double kl = 1E-10, kq = 1E-10;
+        //The sun light source.
+        scene.lights.add(
+                new PointLight(new Color(java.awt.Color.WHITE), new Point3D(0, 0, 0)) //
+                        .setkL(kl).setkQ(kq)
+        );
+        //Weak directional light to showcase shadow.
+        scene.lights.add(
+                new DirectionalLight(new Color(java.awt.Color.WHITE).scale(0.1), new Vector(0,-1,0).normalize())
+        );
+
+        ImageWriter imageWriter = new ImageWriter("refractionSolarSystem2", 5000, 5000);
+        Render render = new Render() //
+                .setImageWriter(imageWriter) //
+                .setCamera(camera) //
+                .setRayTracer(new RayTracerBasic(scene));
+
+        render.renderImage();
+        render.writeToImage();
+
     }
 }
