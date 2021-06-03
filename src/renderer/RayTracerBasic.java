@@ -18,7 +18,9 @@ import static primitives.Util.alignZero;
  */
 public class RayTracerBasic extends RayTracerBase {
     /**
-     * TODO: explain what these are
+     * MAX_CALC_COLOR_LEVEL is the amount of levels we allow the recursive calculation of light to run for.
+     * MIN_CALC_COLOR_K the k below which we consider a coefficient insignificant and consider it as zero.
+     * INITIAL_K is the constant that scales the coefficients in our calculations by zero to one (zero - use none its value, one - use all of its value).
      */
     private static final int MAX_CALC_COLOR_LEVEL = 10;
     private static final double MIN_CALC_COLOR_K = 0.001;
@@ -42,11 +44,11 @@ public class RayTracerBasic extends RayTracerBase {
     }
 
     /**
-     * TODO:make javadoc
+     * calculates the color at a given point given the ray that intersects the point.
      *
-     * @param gp
-     * @param ray
-     * @return
+     * @param gp  the geo-point representing the point for which we want the color at.
+     * @param ray the ray that intersected the point.
+     * @return the color at the given point.
      */
     private Color calcColor(GeoPoint gp, Ray ray) {
         return calcColor(gp, ray, MAX_CALC_COLOR_LEVEL, INITIAL_K)
@@ -54,9 +56,12 @@ public class RayTracerBasic extends RayTracerBase {
     }
 
     /**
-     * find the color of a intersection.
+     * recursive function to find the color of an intersection.
      *
-     * @param intersection the intersection to find the color of
+     * @param intersection the intersection to find the color of.
+     * @param ray          the ray that intersected the intersection point.
+     * @param level        the level of the recursion.
+     * @param k            the current k coefficient of the color.
      * @return the color of the intersection
      */
     private Color calcColor(GeoPoint intersection, Ray ray, int level, double k) {
@@ -66,13 +71,13 @@ public class RayTracerBasic extends RayTracerBase {
     }
 
     /**
-     * TODO: make javadoc
+     * calculates the color to add from global effects in the scene like reflections/refractions of light rays
      *
-     * @param gp
-     * @param v
-     * @param level
-     * @param k
-     * @return
+     * @param gp    the point for which to calculate the color for.
+     * @param v     the direction vector from the camera to the point.
+     * @param level the current level of the recursion.
+     * @param k     the current k coefficient of the color.
+     * @return the color added by the global effects in the scene.
      */
     private Color calcGlobalEffects(GeoPoint gp, Vector v, int level, double k) {
         Color color = Color.BLACK;
@@ -89,13 +94,13 @@ public class RayTracerBasic extends RayTracerBase {
     }
 
     /**
-     * TODO:make javadoc
+     * gets a reflected or refracted ray, and calculates color added from that ray.
      *
-     * @param ray
-     * @param level
-     * @param kx
-     * @param kkx
-     * @return
+     * @param ray   the reflected or refracted ray.
+     * @param level the current level of the recursion.
+     * @param kx    kx coefficient value.
+     * @param kkx   kkx coefficient value.
+     * @return the color added from the given ray.
      */
     private Color calcGlobalEffect(Ray ray, int level, double kx, double kkx) {
         GeoPoint gp = findClosestIntersection(ray);
@@ -244,12 +249,12 @@ public class RayTracerBasic extends RayTracerBase {
     }
 
     /**
-     * TODO: add javadoc
+     * constructs a reflected ray given the point of reflection, the original rays direction, and the normal vector at the point.
      *
-     * @param point
-     * @param v
-     * @param n
-     * @return
+     * @param point the reflection point
+     * @param v     the direction of the original ray.
+     * @param n     the normal vector at the point of reflection.
+     * @return a ray that is the original ray reflected off of the reflection point and elevated by a small delta.
      */
     private Ray constructReflectedRay(Point3D point, Vector v, Vector n) {
         Vector direction = v.subtract(n.scale(v.dotProduct(n)).scale(2)).normalize();
@@ -257,12 +262,12 @@ public class RayTracerBasic extends RayTracerBase {
     }
 
     /**
-     * TODO: add javadoc
+     * constructs a refracted ray given a refraction point, the original rays direction and the normal vector at the point.
      *
-     * @param point
-     * @param v
-     * @param n
-     * @return
+     * @param point the refraction point.
+     * @param v     the original rays direction.
+     * @param n     the normal vector at the refraction point.
+     * @return a ray that is the original ray refracted off of the refraction point and lowered by a small delta.
      */
     private Ray constructRefractedRay(Point3D point, Vector v, Vector n) {
         return new Ray(point, v, n);
