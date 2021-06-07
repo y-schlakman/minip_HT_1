@@ -243,6 +243,15 @@ public class ReflectionRefractionTests {
 
         );
 
+        //An arbitrary pentagon to meet the assignment requirements of three different types of bodies in the scene.
+        scene.geometries.add(
+                new Polygon(new Point3D(0, -roomHeight/2, zPlane + roomDepth/2), new Point3D(250, -roomHeight/2, zPlane + roomDepth/2),
+                        new Point3D(250, -roomHeight/2 + 250, zPlane + roomDepth/2), new Point3D(125, -roomHeight/2 + 375, zPlane + roomDepth/2),
+                        new Point3D(0, -roomHeight/2 + 250, zPlane + roomDepth/2))
+                        .setEmission(new Color(java.awt.Color.BLUE).scale(1))
+                        .setMaterial(new Material().setkD(0.5).setkS(0.5).setnShininess(50))
+        );
+
         //Light sources.
         double kl = 1E-10, kq = 1E-10;
         //The sun light source.
@@ -255,7 +264,7 @@ public class ReflectionRefractionTests {
                 new DirectionalLight(new Color(java.awt.Color.WHITE).scale(0.1), new Vector(0,-1,0).normalize())
         );
 
-        ImageWriter imageWriter = new ImageWriter("refractionSolarSystem2", 5000, 5000);
+        ImageWriter imageWriter = new ImageWriter("refractionSolarSystem", 3000, 3000);
         Render render = new Render() //
                 .setImageWriter(imageWriter) //
                 .setCamera(camera) //
