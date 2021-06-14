@@ -29,8 +29,8 @@ public class RayTracerBasic extends RayTracerBase {
 
 
     //Constants for testing purposes:
-    private int GLOSSY_NUM_RAYS = 15;
-    private double GLOSSY_RADIUS = 3;
+    private int GLOSSY_NUM_RAYS = 50;
+    private double GLOSSY_RADIUS = 2;
 
     /**
      * constructor that gets a scene
@@ -95,7 +95,7 @@ public class RayTracerBasic extends RayTracerBase {
             if (isZero(GLOSSY_RADIUS))//No glossy affect.
                 color = calcGlobalEffect(constructReflectedRay(gp.point, v, n), level, material.kR, kkr);
             else {
-                color = calcGlossiness(gp.point, v, n, level, GLOSSY_NUM_RAYS, material.kR, kkr);
+                color = calcGlossiness(constructReflectedRay(gp.point, v, n), level, material.kR, kkr);
             }
         }
 
@@ -105,10 +105,6 @@ public class RayTracerBasic extends RayTracerBase {
         if (kkr > MIN_CALC_COLOR_K)
             color = calcGlobalEffect(constructReflectedRay(gp.point, v, n), level, material.kR, kkr);
 
-        //Glossiness light.
-        double kkg = k * material.kG;
-        if(kkg > MIN_CALC_COLOR_K && material.nGlossiness >= 2)
-            color = color.add(calcGlossiness(gp.point, v, n, level, material.nGlossiness, material.kG, kkg));
         */
 
         //Refraction \\ transparency light.
@@ -333,25 +329,49 @@ public class RayTracerBasic extends RayTracerBase {
         return new Vector(a,b,c);
     }
 
-    private Color calcGlossiness(Point3D intersection, Vector v, Vector n, int level, int numRays, double k, double kk){
-        Color color = Color.BLACK;
-        double angle = 2*Math.PI / numRays; //angle between each new vertex.
-        Vector axis = n.normalized(); //The axis of rotation.
+    private Color calcGlossiness(Ray ray, int level, double k, double kk){
+        Color color = calcGlobalEffect(ray, level, k, kk);
+        double angle = 2*Math.PI / GLOSSY_NUM_RAYS; //angle between each new vertex.
+
+        GeoPoint intersection = findClosestIntersection(ray);
+        if(intersection == null)
+            return color;
+
+        Vector axis = ray.get_dir().normalized(); //The axis of rotation.
         Vector a = findPerpendicular(axis).normalize();
         Vector cross = axis.crossProduct(a); //Cross product vector used each time to find next vertex.
-        Vector vertexVector = new Vector(3, 4,5);  //Arbitrary initiation values.
-        Point3D vertexPoint = new Point3D(3, 4, 5);//Arbitrary initiation values.
+        Vector vertexVector = null;
+        Point3D vertexPoint = null;
+        double cos, sin;
+        for(int i=0;i<GLOSSY_NUM_RAYS;++i){
+            cos = Math.cos(angle*i);
+            sin = Math.sin(angle*i);
 
-        for(int i=0;i<numRays;++i){
-            vertexVector = a.scale(Math.cos(angle*i)).add(cross.scale(Math.sin(angle*i)));
-            vertexPoint = intersection.add(vertexVector.scale(GLOSSY_RADIUS));
-            if(i == 0)
-                color = calcGlobalEffect(constructReflectedRay(vertexPoint, v, n), level, k, kk);
-            else
-                color = color.add(calcGlobalEffect(constructReflectedRay(vertexPoint, v, n), level, k, kk));
+            cos = alignZero(cos);
+            sin = alignZero(sin);
+
+            try {
+                if (cos == 0)
+                    vertexVector = cross.scale(sin);
+                else if (sin == 0)
+                    vertexVector = a.scale(cos);
+                else
+                    vertexVector = a.scale(cos).add(cross.scale(sin));
+            }
+            //TODO:erase this
+            catch(IllegalArgumentException e){
+                System.out.println(a.toString());
+                System.out.println(cross.toString());
+                System.out.println("Cosine: " + cos + ", sine: " + sin);
+                System.out.println("Ray: " + ray.toString());
+
+            }
+            vertexPoint = intersection.point.add(vertexVector.scale(GLOSSY_RADIUS));
+
+            color = color.add(calcGlobalEffect(new Ray(ray.get_p0(), vertexPoint.subtract(ray.get_p0())), level, k, kk));
         }
 
-        return color;
+        return color.reduce(GLOSSY_NUM_RAYS + 1);
     }
 
     /**
