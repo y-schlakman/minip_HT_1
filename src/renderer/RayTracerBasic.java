@@ -29,8 +29,8 @@ public class RayTracerBasic extends RayTracerBase {
 
 
     //Constants for testing purposes:
-    private int GLOSSY_NUM_RAYS = 50;
-    private double GLOSSY_RADIUS = 2;
+    private int GLOSSY_NUM_RAYS = 10;
+    private double GLOSSY_RADIUS = 0.5;
 
     /**
      * constructor that gets a scene
@@ -106,12 +106,22 @@ public class RayTracerBasic extends RayTracerBase {
             color = calcGlobalEffect(constructReflectedRay(gp.point, v, n), level, material.kR, kkr);
 
         */
-
+/*
         //Refraction \\ transparency light.
         double kkt = k * material.kT;
         if (kkt > MIN_CALC_COLOR_K)
             color = color.add(
                     calcGlobalEffect(constructRefractedRay(gp.point, v, n), level, material.kT, kkt));
+        return color;*/
+
+        //Refraction \\ transparency light.
+        double kkt = k * material.kT;
+        if (kkt > MIN_CALC_COLOR_K)
+            if (isZero(GLOSSY_RADIUS))//No glossy affect.
+                color = color.add(calcGlobalEffect(constructRefractedRay(gp.point, v, n), level, material.kT, kkt));
+            else {
+                color = color.add(calcGlossiness(constructRefractedRay(gp.point, v, n), level, material.kT, kkt));
+            }
         return color;
     }
 
@@ -297,44 +307,42 @@ public class RayTracerBasic extends RayTracerBase {
 
     /**
      * Finds some vector thats perpendicular to the given.
+     *
      * @param n Said given vector to find a perpendicular vector for.
      * @return The resulting vector.
      */
-    private Vector findPerpendicular(Vector n){
+    private Vector findPerpendicular(Vector n) {
         double x = n.getHead().getX().getCoord();
         double y = n.getHead().getY().getCoord();
         double z = n.getHead().getZ().getCoord();
 
         double a, b, c;
-        if(x == 0) {
+        if (x == 0) {
             a = 1;
             b = z;
             c = -y;
-        }
-        else if(y == 0){
+        } else if (y == 0) {
             b = 1;
             a = z;
             c = -x;
-        }
-        else if(z == 0){
+        } else if (z == 0) {
             c = 1;
             a = y;
             b = -x;
-        }
-        else{
+        } else {
             a = 1;
             b = 1;
-            c = -x*y/z;
+            c = -x * y / z;
         }
-        return new Vector(a,b,c);
+        return new Vector(a, b, c);
     }
 
-    private Color calcGlossiness(Ray ray, int level, double k, double kk){
+    private Color calcGlossiness(Ray ray, int level, double k, double kk) {
         Color color = calcGlobalEffect(ray, level, k, kk);
-        double angle = 2*Math.PI / GLOSSY_NUM_RAYS; //angle between each new vertex.
+        double angle = 2 * Math.PI / GLOSSY_NUM_RAYS; //angle between each new vertex.
 
         GeoPoint intersection = findClosestIntersection(ray);
-        if(intersection == null)
+        if (intersection == null)
             return color;
 
         Vector axis = ray.get_dir().normalized(); //The axis of rotation.
@@ -343,29 +351,19 @@ public class RayTracerBasic extends RayTracerBase {
         Vector vertexVector = null;
         Point3D vertexPoint = null;
         double cos, sin;
-        for(int i=0;i<GLOSSY_NUM_RAYS;++i){
-            cos = Math.cos(angle*i);
-            sin = Math.sin(angle*i);
+        for (int i = 0; i < GLOSSY_NUM_RAYS; ++i) {
+            cos = Math.cos(angle * i);
+            sin = Math.sin(angle * i);
 
             cos = alignZero(cos);
             sin = alignZero(sin);
 
-            try {
-                if (cos == 0)
-                    vertexVector = cross.scale(sin);
-                else if (sin == 0)
-                    vertexVector = a.scale(cos);
-                else
-                    vertexVector = a.scale(cos).add(cross.scale(sin));
-            }
-            //TODO:erase this
-            catch(IllegalArgumentException e){
-                System.out.println(a.toString());
-                System.out.println(cross.toString());
-                System.out.println("Cosine: " + cos + ", sine: " + sin);
-                System.out.println("Ray: " + ray.toString());
-
-            }
+            if (cos == 0)
+                vertexVector = cross.scale(sin);
+            else if (sin == 0)
+                vertexVector = a.scale(cos);
+            else
+                vertexVector = a.scale(cos).add(cross.scale(sin));
             vertexPoint = intersection.point.add(vertexVector.scale(GLOSSY_RADIUS));
 
             color = color.add(calcGlobalEffect(new Ray(ray.get_p0(), vertexPoint.subtract(ray.get_p0())), level, k, kk));
