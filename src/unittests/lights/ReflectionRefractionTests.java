@@ -264,7 +264,7 @@ public class ReflectionRefractionTests {
                 new DirectionalLight(new Color(java.awt.Color.WHITE).scale(0.1), new Vector(0,-1,0).normalize())
         );
 
-        ImageWriter imageWriter = new ImageWriter("refractionSolarSystem", 3000, 3000);
+        ImageWriter imageWriter = new ImageWriter("refractionSolarSystemWithGlossy", 600, 600);
         Render render = new Render() //
                 .setImageWriter(imageWriter) //
                 .setCamera(camera) //

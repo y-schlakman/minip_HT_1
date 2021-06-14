@@ -10,6 +10,7 @@ import java.util.List;
 import geometries.Intersectable.GeoPoint;
 
 import static primitives.Util.alignZero;
+import static primitives.Util.isZero;
 
 /**
  * child class of RayTracerBase, that is used to determine color of a view plane pixel from which we casted a ray.
@@ -25,6 +26,11 @@ public class RayTracerBasic extends RayTracerBase {
     private static final int MAX_CALC_COLOR_LEVEL = 10;
     private static final double MIN_CALC_COLOR_K = 0.001;
     private static final double INITIAL_K = 1.0;
+
+
+    //Constants for testing purposes:
+    private int GLOSSY_NUM_RAYS = 15;
+    private double GLOSSY_RADIUS = 3;
 
     /**
      * constructor that gets a scene
@@ -83,9 +89,29 @@ public class RayTracerBasic extends RayTracerBase {
         Color color = Color.BLACK;
         Vector n = gp.geometry.getNormal(gp.point);
         Material material = gp.geometry.getMaterial();
+
+        double kkr = k * material.kR;
+        if (kkr > MIN_CALC_COLOR_K) {
+            if (isZero(GLOSSY_RADIUS))//No glossy affect.
+                color = calcGlobalEffect(constructReflectedRay(gp.point, v, n), level, material.kR, kkr);
+            else {
+                color = calcGlossiness(gp.point, v, n, level, GLOSSY_NUM_RAYS, material.kR, kkr);
+            }
+        }
+
+        /*
+        //Reflection light.
         double kkr = k * material.kR;
         if (kkr > MIN_CALC_COLOR_K)
             color = calcGlobalEffect(constructReflectedRay(gp.point, v, n), level, material.kR, kkr);
+
+        //Glossiness light.
+        double kkg = k * material.kG;
+        if(kkg > MIN_CALC_COLOR_K && material.nGlossiness >= 2)
+            color = color.add(calcGlossiness(gp.point, v, n, level, material.nGlossiness, material.kG, kkg));
+        */
+
+        //Refraction \\ transparency light.
         double kkt = k * material.kT;
         if (kkt > MIN_CALC_COLOR_K)
             color = color.add(
@@ -271,6 +297,61 @@ public class RayTracerBasic extends RayTracerBase {
      */
     private Ray constructRefractedRay(Point3D point, Vector v, Vector n) {
         return new Ray(point, v, n);
+    }
+
+    /**
+     * Finds some vector thats perpendicular to the given.
+     * @param n Said given vector to find a perpendicular vector for.
+     * @return The resulting vector.
+     */
+    private Vector findPerpendicular(Vector n){
+        double x = n.getHead().getX().getCoord();
+        double y = n.getHead().getY().getCoord();
+        double z = n.getHead().getZ().getCoord();
+
+        double a, b, c;
+        if(x == 0) {
+            a = 1;
+            b = z;
+            c = -y;
+        }
+        else if(y == 0){
+            b = 1;
+            a = z;
+            c = -x;
+        }
+        else if(z == 0){
+            c = 1;
+            a = y;
+            b = -x;
+        }
+        else{
+            a = 1;
+            b = 1;
+            c = -x*y/z;
+        }
+        return new Vector(a,b,c);
+    }
+
+    private Color calcGlossiness(Point3D intersection, Vector v, Vector n, int level, int numRays, double k, double kk){
+        Color color = Color.BLACK;
+        double angle = 2*Math.PI / numRays; //angle between each new vertex.
+        Vector axis = n.normalized(); //The axis of rotation.
+        Vector a = findPerpendicular(axis).normalize();
+        Vector cross = axis.crossProduct(a); //Cross product vector used each time to find next vertex.
+        Vector vertexVector = new Vector(3, 4,5);  //Arbitrary initiation values.
+        Point3D vertexPoint = new Point3D(3, 4, 5);//Arbitrary initiation values.
+
+        for(int i=0;i<numRays;++i){
+            vertexVector = a.scale(Math.cos(angle*i)).add(cross.scale(Math.sin(angle*i)));
+            vertexPoint = intersection.add(vertexVector.scale(GLOSSY_RADIUS));
+            if(i == 0)
+                color = calcGlobalEffect(constructReflectedRay(vertexPoint, v, n), level, k, kk);
+            else
+                color = color.add(calcGlobalEffect(constructReflectedRay(vertexPoint, v, n), level, k, kk));
+        }
+
+        return color;
     }
 
     /**

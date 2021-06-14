@@ -8,6 +8,7 @@ public class Material {
      * kR is reflectiveness coefficient
      * nShininess is shininess coefficient
      */
+
     public double kD = 0;
     public double kS = 0;
     public double kT = 0;
@@ -63,4 +64,5 @@ public class Material {
         this.nShininess = nShininess;
         return this;
     }
+
 }
