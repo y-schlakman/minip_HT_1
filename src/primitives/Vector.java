@@ -7,8 +7,10 @@ package primitives;
  * @author Eli and Yosi.
  */
 public class Vector {
-    /**The point containing the values associated with
-     *  the vectors direction and space in cartesian representation */
+    /**
+     * The point containing the values associated with
+     * the vectors direction and space in cartesian representation
+     */
     Point3D head;
 
     /**
@@ -18,12 +20,11 @@ public class Vector {
      * @param x value along the x axis.
      * @param y value along the y axis.
      * @param z value along the z axis.
-     * @exception IllegalArgumentException if the given values form a degenerate vector (the zero vector).
+     * @throws IllegalArgumentException if the given values form a degenerate vector (the zero vector).
      */
-    public Vector(double x, double y, double z)
-    {
+    public Vector(double x, double y, double z) {
         head = new Point3D(x, y, z);
-        if(head.equals(Point3D.ZERO))
+        if (head.equals(Point3D.ZERO))
             throw new IllegalArgumentException("Degenerate vector parameters (zero vector).");
     }
 
@@ -31,16 +32,17 @@ public class Vector {
      * ctor using a Point3D object representing the necessary information about
      * the vectors magnitude and direction in the 3 dimensional cartesian space.
      *
-     * @exception IllegalArgumentException if the given point forms a degenerate vector (the zero vector).
+     * @throws IllegalArgumentException if the given point forms a degenerate vector (the zero vector).
      */
-    public Vector(Point3D head){
+    public Vector(Point3D head) {
         this.head = head;
-        if(head.equals(Point3D.ZERO))
+        if (head.equals(Point3D.ZERO))
             throw new IllegalArgumentException("Degenerate vector parameters (zero vector).");
     }
 
     /**
      * getter for the head of a vector.
+     *
      * @return the head of the vector.
      */
     public Point3D getHead() {
@@ -53,7 +55,7 @@ public class Vector {
      * @param v the other vector.
      * @return the sum of this vector and the given vector.
      */
-    public Vector add(Vector v){
+    public Vector add(Vector v) {
         return new Vector(head.add((v)));
     }
 
@@ -63,7 +65,7 @@ public class Vector {
      * @param v the other vector.
      * @return the difference between this vector and the given vector.
      */
-    public Vector subtract(Vector v){
+    public Vector subtract(Vector v) {
         return this.add(v.scale(-1));
     }
 
@@ -73,7 +75,7 @@ public class Vector {
      * @param c the scaling constant.
      * @return the resulting scaled vector.
      */
-    public Vector scale(double c){
+    public Vector scale(double c) {
         return new Vector(head.x.coord * c,
                 head.y.coord * c,
                 head.z.coord * c);
@@ -86,7 +88,7 @@ public class Vector {
      * @return resulting value.
      */
     //This is done geometrically (x1*x2 + y1*y2 + z1*z2) and not trigonometricaly (|v1|*|v2| cos(alpha)) to save time.
-    public double dotProduct(Vector v){
+    public double dotProduct(Vector v) {
         return head.x.coord * v.head.x.coord +
                 head.y.coord * v.head.y.coord +
                 head.z.coord * v.head.z.coord;
@@ -106,44 +108,87 @@ public class Vector {
           | a2 b2 c2 |
 
      */
-    public Vector crossProduct(Vector v){
-        return new Vector(head.y.coord*v.head.z.coord - head.z.coord*v.head.y.coord,
-                head.z.coord*v.head.x.coord - head.x.coord*v.head.z.coord,
-                head.x.coord*v.head.y.coord - head.y.coord*v.head.x.coord);
+    public Vector crossProduct(Vector v) {
+        return new Vector(head.y.coord * v.head.z.coord - head.z.coord * v.head.y.coord,
+                head.z.coord * v.head.x.coord - head.x.coord * v.head.z.coord,
+                head.x.coord * v.head.y.coord - head.y.coord * v.head.x.coord);
     }
 
     /**
      * Calculates the length of the vector squared.
+     *
      * @return the length squared.
      */
-    public double lengthSquared(){
+    public double lengthSquared() {
         return head.distanceSquared(Point3D.ZERO);
     }
 
     /**
      * Calculates the length of the vector.
+     *
      * @return the length of the vector.
      */
-    public double length(){
+    public double length() {
         return head.distance(Point3D.ZERO);
     }
 
     /**
      * Normalizes this vector, IE setting its magnitude to be 1 whilst keeping its direction the same.
+     *
      * @return the resulting vector.
      */
-    public Vector normalize(){
-        head = scale(1/length()).head;
+    public Vector normalize() {
+        head = scale(1 / length()).head;
         return this;
     }
 
     /**
      * Calcultes the normal vector pointing in this vector`s direction.
+     *
      * @return the resulting vector.
      */
-    public Vector normalized(){
+    public Vector normalized() {
         Vector v = new Vector(head);
         return v.normalize();
+    }
+
+    /**
+     * Rotates the vector around the x-axis.
+     *
+     * @param angle The angle of rotation.
+     * @return The resultant vector.
+     */
+    public Vector RotateX(double angle) {
+        Point3D head = this.getHead();
+        double x = head.getX().getCoord(), y = head.getY().getCoord(), z = head.getZ().getCoord();
+        double s = Math.sin(angle), c = Math.cos(angle);
+        return new Vector(x, y * c - z * s, y * s + z * c);
+    }
+
+    /**
+     * Rotates the vector around the y-axis.
+     *
+     * @param angle The angle of rotation.
+     * @return The resultant vector.
+     */
+    public Vector RotateY(double angle) {
+        Point3D head = this.getHead();
+        double x = head.getX().getCoord(), y = head.getY().getCoord(), z = head.getZ().getCoord();
+        double s = Math.sin(angle), c = Math.cos(angle);
+        return new Vector(x * c + z * s, y, -x * s + z * c);
+    }
+
+    /**
+     * Rotates the vector around the z-axis.
+     *
+     * @param angle The angle of rotation.
+     * @return The resultant vector.
+     */
+    public Vector RotateZ(double angle) {
+        Point3D head = this.getHead();
+        double x = head.getX().getCoord(), y = head.getY().getCoord(), z = head.getZ().getCoord();
+        double s = Math.sin(angle), c = Math.cos(angle);
+        return new Vector(x * c - y * s, x * s + y * c, z);
     }
 
     @Override
@@ -151,7 +196,7 @@ public class Vector {
         if (this == obj) return true;
         if (obj == null) return false;
         if (!(obj instanceof Vector)) return false;
-        Vector other = (Vector)obj;
+        Vector other = (Vector) obj;
         return this.head.equals(other.head);
     }
 

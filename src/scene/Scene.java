@@ -14,11 +14,20 @@ import java.util.List;
  * @author Yosi and Eli
  */
 public class Scene {
+    /**
+     * name - name of scene
+     * background - color of scene's background
+     * ambientLight - color of scene's ambient light
+     * geometries - list of geometries in the scene
+     * lights - list of lights in the scene
+     * numGlossyDiffuseRays - number of gloss and diffuse rays to be cast
+     */
     public String name;
     public Color background;
     public AmbientLight ambientLight;
     public Geometries geometries;
     public List<LightSource> lights =  new LinkedList<LightSource>();
+    private int numGlossyDiffuseRays;
 
     /**
      * constructor for Scene that gets the scene name and sets all fields to default
@@ -29,6 +38,7 @@ public class Scene {
         background = Color.BLACK;
         ambientLight = new AmbientLight();
         geometries = new Geometries();
+        numGlossyDiffuseRays = 10;
     }
 
     /**
@@ -68,6 +78,14 @@ public class Scene {
      */
     public Scene setLights(List<LightSource> lights) {
         this.lights = lights;
+        return this;
+    }
+
+    public Scene setNumGlossyDiffuseRays(int numRays){
+        if(numRays < 0) {
+            throw new IllegalArgumentException("number of rays must be zero or larger");
+        }
+        numGlossyDiffuseRays = numRays;
         return this;
     }
 }
