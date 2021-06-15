@@ -65,7 +65,7 @@ public class Render {
                 ray = camera.constructRayThroughPixel(imageWriter.getNx(), imageWriter.getNy(), j, i);
                 color = rayTracer.traceRay(ray);
                 imageWriter.writePixel(j, i, color);
-                //TODO:remove this
+                //print percentage of rendering process finished
                 System.out.println("Percentage done: " +
                         ((imageWriter.getNy()*j + i)*100 )/ (imageWriter.getNy()*imageWriter.getNx())
                 + "%.");
