@@ -5,6 +5,7 @@ import geometries.Intersectable;
 import primitives.*;
 import scene.Scene;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import geometries.Intersectable.GeoPoint;
@@ -27,10 +28,10 @@ public class RayTracerBasic extends RayTracerBase {
     private static final double MIN_CALC_COLOR_K = 0.001;
     private static final double INITIAL_K = 1.0;
 
-
-    //Constants for testing purposes:
+//TODO:remove
+    /*//Constants for testing purposes:
     private int GLOSSY_NUM_RAYS = 10;
-    private double GLOSSY_RADIUS = 0.5;
+    private double GLOSSY_RADIUS = 0.5;*/
 
     /**
      * constructor that gets a scene
@@ -92,10 +93,10 @@ public class RayTracerBasic extends RayTracerBase {
 
         double kkr = k * material.kR;
         if (kkr > MIN_CALC_COLOR_K) {
-            if (isZero(GLOSSY_RADIUS))//No glossy affect.
+            if (!scene.glossyEnabled || isZero(material.glossyRadius))//No glossy affect.
                 color = calcGlobalEffect(constructReflectedRay(gp.point, v, n), level, material.kR, kkr);
             else {
-                color = calcGlossiness(constructReflectedRay(gp.point, v, n), level, material.kR, kkr);
+                color = calcGlossiness(constructReflectedRay(gp.point, v, n), material.glossyRadius, level, material.kR, kkr);
             }
         }
 
@@ -117,10 +118,10 @@ public class RayTracerBasic extends RayTracerBase {
         //Refraction \\ transparency light.
         double kkt = k * material.kT;
         if (kkt > MIN_CALC_COLOR_K)
-            if (isZero(GLOSSY_RADIUS))//No glossy affect.
+            if (!scene.diffuseEnabled || isZero(material.diffuseRadius))//No diffuse affect.
                 color = color.add(calcGlobalEffect(constructRefractedRay(gp.point, v, n), level, material.kT, kkt));
             else {
-                color = color.add(calcGlossiness(constructRefractedRay(gp.point, v, n), level, material.kT, kkt));
+                color = color.add(calcGlossiness(constructRefractedRay(gp.point, v, n), material.diffuseRadius, level, material.kT, kkt));
             }
         return color;
     }
@@ -306,7 +307,7 @@ public class RayTracerBasic extends RayTracerBase {
     }
 
     /**
-     * Finds some vector thats perpendicular to the given.
+     * Finds some vector that's perpendicular to the given.
      *
      * @param n Said given vector to find a perpendicular vector for.
      * @return The resulting vector.
@@ -337,39 +338,67 @@ public class RayTracerBasic extends RayTracerBase {
         return new Vector(a, b, c);
     }
 
-    private Color calcGlossiness(Ray ray, int level, double k, double kk) {
+    /**
+     * calculates the average color around a given ray's intersection.
+     *
+     * @param ray the ray to calculate average color around its intersection.
+     * @param radius the radius the cone of rays around the original ray
+     * @param level level parameter to send to calcGlobalEffect
+     * @param k k parameter to send to calcGlobalEffect
+     * @param kk kk parameter to send to calcGlobalEffect
+     * @return the average color around the given ray's intersection.
+     */
+    private Color calcGlossiness(Ray ray, double radius, int level, double k, double kk) {
+        //calculate the original color coming from the original ray.
         Color color = calcGlobalEffect(ray, level, k, kk);
-        double angle = 2 * Math.PI / GLOSSY_NUM_RAYS; //angle between each new vertex.
 
+        //find the closest intersection of the original ray with another object in the scene
         GeoPoint intersection = findClosestIntersection(ray);
+
+        //if the ray has no intersections with other objects in the scene, return the color from the original ray.
         if (intersection == null)
             return color;
 
-        Vector axis = ray.get_dir().normalized(); //The axis of rotation.
-        Vector a = findPerpendicular(axis).normalize();
-        Vector cross = axis.crossProduct(a); //Cross product vector used each time to find next vertex.
-        Vector vertexVector = null;
-        Point3D vertexPoint = null;
-        double cos, sin;
-        for (int i = 0; i < GLOSSY_NUM_RAYS; ++i) {
-            cos = Math.cos(angle * i);
-            sin = Math.sin(angle * i);
+        //the points through which the additional rays should pass through
+        ArrayList<Point3D> vertexPoints = getRegularPolygonVertices(intersection.point, radius, scene.numGlossyDiffuseRays, ray.get_dir().normalized());
 
-            cos = alignZero(cos);
-            sin = alignZero(sin);
-
-            if (cos == 0)
-                vertexVector = cross.scale(sin);
-            else if (sin == 0)
-                vertexVector = a.scale(cos);
-            else
-                vertexVector = a.scale(cos).add(cross.scale(sin));
-            vertexPoint = intersection.point.add(vertexVector.scale(GLOSSY_RADIUS));
-
+        //add supplemental rays color to the final color
+        for (Point3D vertexPoint:vertexPoints) {
             color = color.add(calcGlobalEffect(new Ray(ray.get_p0(), vertexPoint.subtract(ray.get_p0())), level, k, kk));
         }
 
-        return color.reduce(GLOSSY_NUM_RAYS + 1);
+        //return the average of all the rays colors
+        return color.reduce(scene.numGlossyDiffuseRays + 1);
+    }
+
+    private ArrayList<Point3D> getRegularPolygonVertices(Point3D center, double radius, int numVertices, Vector axis) {
+        //find the perpendicular vector to the axis
+        Vector toRotate = findPerpendicular(axis).normalize();
+
+        //Cross product vector used each time to find next vertex.
+        Vector crossProduct = axis.crossProduct(toRotate);
+
+        Vector vertexVector;
+        ArrayList<Point3D> vertexPoints = new ArrayList<Point3D>();
+        double angle = 2 * Math.PI / numVertices;//calculate the angle between each new vertex.
+        double cos, sin;
+
+        for (int i = 0; i < numVertices; ++i) {
+            //spin the vector along the given axis
+            cos = alignZero(Math.cos(angle * i));
+            sin = alignZero(Math.sin(angle * i));
+
+            if (cos == 0)
+                vertexVector = crossProduct.scale(sin);
+            else if (sin == 0)
+                vertexVector = toRotate.scale(cos);
+            else
+                vertexVector = toRotate.scale(cos).add(crossProduct.scale(sin));
+
+            //find vertex that is on the rotated vector and "radius" away from center point
+            vertexPoints.add(center.add(vertexVector.scale(radius)));
+        }
+        return vertexPoints;
     }
 
     /**
