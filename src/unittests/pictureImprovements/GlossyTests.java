@@ -1,5 +1,6 @@
 package pictureImprovements;
 
+import elements.AmbientLight;
 import elements.Camera;
 import elements.DirectionalLight;
 import elements.SpotLight;
@@ -36,11 +37,18 @@ public class GlossyTests {
         Camera camera = new Camera(new Point3D(0, 150, 0), new Vector(0, 0, 1), new Vector(0, 1, 0)) //
                 .setViewPlaneSize(150, 150).setDistance(1000);
 
+        scene.setAmbientLight(new AmbientLight(new Color(java.awt.Color.PINK), 0.25));
+
+        scene.setDiffuseEnabled(true);
+        scene.setGlossyEnabled(true);
+        scene.setNumGlossyDiffuseRays(15);
+
+
         /*
         Walls and floor.
          */
         double initialDepth = 2000;
-        //double wallHeight = 100, wallWidth = 100, wallDepth = 5000;
+        double wallHeight = 1000;
         double floorWidth = 300, floorDepth = 500;
         scene.geometries.add(
                 /*
@@ -51,15 +59,15 @@ public class GlossyTests {
 
                           Z         Y
                  */
-        /*new Polygon(new Point3D(-wallWidth/2, 0, wallDepth), new Point3D(-wallWidth/2, wallHeight, wallDepth),
-                new Point3D(wallWidth/2, wallHeight, wallDepth), new Point3D(wallWidth/2, 0, wallDepth))
+        new Polygon(new Point3D(-floorWidth/2, 0, initialDepth + floorDepth), new Point3D(-floorWidth/2, wallHeight, initialDepth + floorDepth),
+                new Point3D(floorWidth/2, wallHeight, initialDepth + floorDepth), new Point3D(floorWidth/2, 0, initialDepth + floorDepth))
                 .setEmission(new Color(java.awt.Color.BLUE))
                 .setMaterial(new Material().setkD(0.5).setkS(0.5).setnShininess(50)),
-        */
+
         new Polygon(new Point3D(-floorWidth/2, 0, initialDepth), new Point3D(floorWidth/2, 0, initialDepth),
                 new Point3D(floorWidth/2, 0, initialDepth + floorDepth), new Point3D(-floorWidth/2, 0, initialDepth + floorDepth))
-                .setEmission(new Color(java.awt.Color.LIGHT_GRAY))
-                .setMaterial(new Material().setkD(0.5).setkS(0.5).setnShininess(50).setkR(0.5))
+                .setEmission(new Color(java.awt.Color.GRAY))
+                .setMaterial(new Material().setkD(0.75).setkS(0.75).setnShininess(20).setkR(0.2).setGlossyRadius(2))
         );
 
         /*
@@ -121,23 +129,115 @@ public class GlossyTests {
             );
         }
 
+        double scopeDepth = 1000;
+        double scopeScale = 7;
+        double scopeDx = -17, scopeDy = 150;
+        Point3D pa = new Point3D(-3.8*scopeScale + scopeDx, -1.8*scopeScale + scopeDy, scopeDepth);
+        Point3D pb = new Point3D(-1.5*scopeScale + scopeDx, -1.8*scopeScale + scopeDy, scopeDepth);
+        Point3D pc = new Point3D(0.2 *scopeScale + scopeDx, -0.1*scopeScale + scopeDy, scopeDepth);
+        Point3D pd = new Point3D(0.2 *scopeScale + scopeDx, 2.2 *scopeScale + scopeDy, scopeDepth);
+        Point3D pe = new Point3D(-1.5*scopeScale + scopeDx, 3.9 *scopeScale + scopeDy, scopeDepth);
+        Point3D pf = new Point3D(-3.8*scopeScale + scopeDx, 3.9 *scopeScale + scopeDy, scopeDepth);
+        Point3D pg = new Point3D(-5.5*scopeScale + scopeDx, 2.2 *scopeScale + scopeDy, scopeDepth);
+        Point3D ph = new Point3D(-5.5*scopeScale + scopeDx, -0.1*scopeScale + scopeDy, scopeDepth);
+        Point3D pq = new Point3D(-7.1*scopeScale + scopeDx, 5.5 *scopeScale + scopeDy, scopeDepth);
+        Point3D pr = new Point3D(1.8 *scopeScale + scopeDx, 5.5 *scopeScale + scopeDy, scopeDepth);
+        Point3D ps = new Point3D(1.8 *scopeScale + scopeDx, -3.5*scopeScale + scopeDy, scopeDepth);
+        Point3D pt = new Point3D(-7.1*scopeScale + scopeDx, -3.5*scopeScale + scopeDy, scopeDepth);
 
+        List<Polygon> scopeBoarder = new ArrayList<Polygon>();
+        scopeBoarder.add( new Polygon(pq, pr, pe, pf));
+        scopeBoarder.add( new Polygon(pr, pd, pe));
+        scopeBoarder.add( new Polygon(pr, ps, pc, pd));
+        scopeBoarder.add( new Polygon(pc, ps, pb));
+        scopeBoarder.add( new Polygon(pb, ps, pt, pa));
+        scopeBoarder.add( new Polygon(ph, pa, pt));
+        scopeBoarder.add( new Polygon(pq, pg, ph, pt));
+        scopeBoarder.add( new Polygon(pq, pf, pg));
+        Polygon polyScope = new Polygon(pa, pb, pc, pd, pe, pf, pg, ph);
 
-        double lightAngleX = Math.toRadians(-20); //Up\down.
-        double lightAngleY = Math.toRadians(-10); //Left\right.
-        //double lightAnglez = Math.toRadians(20); //dunno.
+        for(Polygon p : scopeBoarder)
+            p.setEmission(new Color(java.awt.Color.GREEN))
+                    .setMaterial(new Material().setkD(0.4).setkS(0.4).setnShininess(30));
+
+        scene.geometries.add(scopeBoarder.toArray(new Polygon[scopeBoarder.size()]));
+        scene.geometries.add(polyScope.setEmission(new Color(java.awt.Color.WHITE).reduce(3))
+        .setMaterial(new Material().setkT(0.8).setkD(0.1).setkS(0.1).setDiffuseRadius(1.5))
+                );
+
+        double crosshairWidth = 0.2, crosshairDelta = 0.5;
+        Point3D pab = new Point3D((pa.getX().getCoord() + pb.getX().getCoord())/2, pa.getY().getCoord(), pa.getZ().getCoord() - crosshairDelta);
+        Point3D pfe = new Point3D((pf.getX().getCoord() + pe.getX().getCoord())/2, pf.getY().getCoord(), pf.getZ().getCoord() - crosshairDelta);
+        Point3D pgh = new Point3D(pg.getX().getCoord(), (pg.getY().getCoord() + ph.getY().getCoord())/2, pg.getZ().getCoord() - crosshairDelta);
+        Point3D pdc = new Point3D(pd.getX().getCoord(), (pd.getY().getCoord() + pc.getY().getCoord())/2, pd.getZ().getCoord() - crosshairDelta);
+        scene.geometries.add(
+                //Vertical crosshair line.
+                new Polygon(
+                        pab.add(new Vector(1,0,0).scale(scopeScale*crosshairWidth/2)),
+                        pfe.add(new Vector(1,0,0).scale(scopeScale*crosshairWidth/2)),
+                        pfe.add(new Vector(-1,0,0).scale(scopeScale*crosshairWidth/2)),
+                        pab.add(new Vector(-1,0,0).scale(scopeScale*crosshairWidth/2))
+                ).setEmission(new Color(java.awt.Color.BLACK))
+                .setMaterial(new Material()),
+
+                //Horizontal crosshair line.
+                new Polygon(
+                        pgh.add(new Vector(0,1,0).scale(scopeScale*crosshairWidth/2)),
+                        pdc.add(new Vector(0,1,0).scale(scopeScale*crosshairWidth/2)),
+                        pdc.add(new Vector(0,-1,0).scale(scopeScale*crosshairWidth/2)),
+                        pgh.add(new Vector(0,-1,0).scale(scopeScale*crosshairWidth/2))
+                ).setEmission(new Color(java.awt.Color.BLACK))
+                        .setMaterial(new Material())
+        );
+
+        double gunLength = 100, gunHeight = 2;
+        scene.geometries.add(
+                //Top part of gun
+                new Polygon(
+                        pt, ps, ps.add(new Vector(0,0,-1).scale(scopeScale*gunLength)),
+                        pt.add(new Vector(0,0,-1).scale(scopeScale*gunLength))
+                ).setEmission(new Color(java.awt.Color.GREEN).reduce(3))
+                .setMaterial(new Material().setkD(0.4).setkS(0.4).setnShininess(10)),
+
+                //Bottom left part of gun.
+                new Polygon(
+                        ps, ps.add(new Vector(0,0,-1).scale(scopeScale*gunLength)),
+                        ps.add(new Vector(0,0,-1).scale(scopeScale*gunLength)).add(new Vector(0,-1,0).scale(scopeScale*gunHeight)),
+                        ps.add(new Vector(0,-1,0).scale(scopeScale*gunHeight))
+                ).setEmission(new Color(java.awt.Color.GREEN).reduce(3))
+                        .setMaterial(new Material().setkD(0.4).setkS(0.4).setnShininess(10)),
+
+                //In-front part of gun.
+                new Polygon(
+                        ps.add(new Vector(0,0,-1).scale(scopeScale*gunLength)),
+                        pt.add(new Vector(0,0,-1).scale(scopeScale*gunLength)),
+                        pt.add(new Vector(0,0,-1).scale(scopeScale*gunLength)).add(new Vector(0,-1,0).scale(scopeScale*gunHeight)),
+                        ps.add(new Vector(0,0,-1).scale(scopeScale*gunLength)).add(new Vector(0,-1,0).scale(scopeScale*gunHeight))
+                ).setEmission(new Color(java.awt.Color.GREEN).reduce(3))
+                        .setMaterial(new Material().setkD(0.4).setkS(0.4).setnShininess(10))
+
+                );
+
+        double lightAngleX1 = Math.toRadians(0); //Up\down.
+        double lightAngleY1 = Math.toRadians(20); //Left\right.
+        double lightAngleX2 = Math.toRadians(25); //Up\down.
+        double lightAngleY2 = Math.toRadians(-15); //Left\right.
 
         scene.lights.add( //
-                new DirectionalLight(new Color(java.awt.Color.WHITE).reduce(3),
-                        new Vector(0, 0, 1).RotateX(lightAngleX).RotateY(lightAngleY)) //
+                new DirectionalLight(new Color(java.awt.Color.WHITE).reduce(5),
+                        new Vector(0, 0, 1).RotateX(lightAngleX1).RotateY(lightAngleY1)) //
+
+        );
+        scene.lights.add( //
+                new DirectionalLight(new Color(255, 200, 150).reduce(1),
+                        new Vector(0, -1, 0).RotateX(lightAngleX2).RotateY(lightAngleY2)) //
 
         );
 
 
 
-
         Render render = new Render() //
-                .setImageWriter(new ImageWriter("TargetPractice", 500, 500)) //
+                .setImageWriter(new ImageWriter("TargetPractice", 600, 600)) //
                 .setCamera(camera) //
                 .setRayTracer(new RayTracerBasic(scene));
         render.renderImage();
