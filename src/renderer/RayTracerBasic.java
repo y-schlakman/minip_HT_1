@@ -338,8 +338,11 @@ public class RayTracerBasic extends RayTracerBase {
         if (intersection == null)
             return color;
 
+        //number of rays to cast - if it is an uneven number correct to an even number
+        int numVerticesInPolygon = scene.numGlossyDiffuseRays % 2 == 0? scene.numGlossyDiffuseRays / 2 : (scene.numGlossyDiffuseRays + 1) / 2;
+
         //the points through which the additional rays should pass through
-        ArrayList<Point3D> vertexPoints = getRegularPolygonVertices(intersection.point, radius, scene.numGlossyDiffuseRays, ray.get_dir().normalized());
+        ArrayList<Point3D> vertexPoints = getRingRegularPolygonVertices(intersection.point, radius, numVerticesInPolygon, ray.get_dir().normalized());
 
         //add supplemental rays color to the final color
         for (Point3D vertexPoint:vertexPoints) {
@@ -351,18 +354,20 @@ public class RayTracerBasic extends RayTracerBase {
     }
 
     /**
-     * calculate the vertices of a regular polygon given its center, radius, number of vertices, and axis vector/
-     * @param center point representing the center of the polygon
-     * @param radius the radius of the polygon
-     * @param numVertices number of vertices in the polygon
-     * @param axis axis vector of the polygon
-     * @return returns a list of points that are the regular polygon's vertices.
+     * calculate the vertices of two equally sided regular polygons one inside the other where the smaller one has half of its larger counterpart's radius - forming a ring shape.
+     * the function requires the large polygon's center, radius, axis vector, and number of vertices.
+     *
+     * @param center point representing the center of the polygons
+     * @param radius the radius of the large outer polygon
+     * @param numVertices desired number of vertices in the outer and inner polygon
+     * @param axis axis vector of the polygons
+     * @return returns a list of points that are the regular polygons' vertices.
      */
-    private ArrayList<Point3D> getRegularPolygonVertices(Point3D center, double radius, int numVertices, Vector axis) {
+    private ArrayList<Point3D> getRingRegularPolygonVertices(Point3D center, double radius, int numVertices, Vector axis) {
         //find the perpendicular vector to the axis
         Vector toRotate = findPerpendicular(axis).normalize();
 
-        //Cross product vector used each time to find next vertex.
+        //Cross product vector used each time to find next vertex in outer and inner polygons.
         Vector crossProduct = axis.crossProduct(toRotate);
 
         Vector vertexVector;
@@ -382,8 +387,11 @@ public class RayTracerBasic extends RayTracerBase {
             else
                 vertexVector = toRotate.scale(cos).add(crossProduct.scale(sin));
 
-            //find vertex that is on the rotated vector and "radius" away from center point
+            //find outer polygon's vertex that is on the rotated vector
             vertexPoints.add(center.add(vertexVector.scale(radius)));
+
+            //find inner polygon's vertex that is on the rotated vector
+            vertexPoints.add(center.add(vertexVector.scale(radius / 2.0)));
         }
         return vertexPoints;
     }

@@ -37,11 +37,10 @@ public class GlossyDiffuseTests {
         Camera camera = new Camera(new Point3D(0, 150, 0), new Vector(0, 0, 1), new Vector(0, 1, 0)) //
                 .setViewPlaneSize(150, 150).setDistance(1000);
 
-        scene.setAmbientLight(new AmbientLight(new Color(java.awt.Color.PINK), 0.25));
-
-        scene.setDiffuseEnabled(true);
-        scene.setGlossyEnabled(true);
-        scene.setNumGlossyDiffuseRays(15);
+        scene.setAmbientLight(new AmbientLight(new Color(java.awt.Color.PINK), 0.25))
+                .setDiffuseEnabled(true)
+                .setGlossyEnabled(true)
+                .setNumGlossyDiffuseRays(15);
 
 
         /*
