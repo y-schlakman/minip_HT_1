@@ -20,12 +20,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Tests for glossy reflection and refraction functionality.
+ * Tests for glossy and diffuse functionality.
  *
  * @author Yosi and Eli
  */
 
-public class GlossyTests {
+public class GlossyDiffuseTests {
     private Scene scene = new Scene("Test scene");
 
     /**
@@ -237,7 +237,7 @@ public class GlossyTests {
 
 
         Render render = new Render() //
-                .setImageWriter(new ImageWriter("TargetPractice", 600, 600)) //
+                .setImageWriter(new ImageWriter("TargetPractice", 300, 300)) //
                 .setCamera(camera) //
                 .setRayTracer(new RayTracerBasic(scene));
         render.renderImage();

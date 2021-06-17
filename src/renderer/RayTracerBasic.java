@@ -1,7 +1,6 @@
 package renderer;
 
 import elements.LightSource;
-import geometries.Intersectable;
 import primitives.*;
 import scene.Scene;
 
@@ -27,11 +26,6 @@ public class RayTracerBasic extends RayTracerBase {
     private static final int MAX_CALC_COLOR_LEVEL = 10;
     private static final double MIN_CALC_COLOR_K = 0.001;
     private static final double INITIAL_K = 1.0;
-
-//TODO:remove
-    /*//Constants for testing purposes:
-    private int GLOSSY_NUM_RAYS = 10;
-    private double GLOSSY_RADIUS = 0.5;*/
 
     /**
      * constructor that gets a scene
@@ -96,24 +90,9 @@ public class RayTracerBasic extends RayTracerBase {
             if (!scene.glossyEnabled || isZero(material.glossyRadius))//No glossy affect.
                 color = calcGlobalEffect(constructReflectedRay(gp.point, v, n), level, material.kR, kkr);
             else {
-                color = calcGlossiness(constructReflectedRay(gp.point, v, n), material.glossyRadius, level, material.kR, kkr);
+                color = calcGlossyDiffuse(constructReflectedRay(gp.point, v, n), material.glossyRadius, level, material.kR, kkr);
             }
         }
-
-        /*
-        //Reflection light.
-        double kkr = k * material.kR;
-        if (kkr > MIN_CALC_COLOR_K)
-            color = calcGlobalEffect(constructReflectedRay(gp.point, v, n), level, material.kR, kkr);
-
-        */
-/*
-        //Refraction \\ transparency light.
-        double kkt = k * material.kT;
-        if (kkt > MIN_CALC_COLOR_K)
-            color = color.add(
-                    calcGlobalEffect(constructRefractedRay(gp.point, v, n), level, material.kT, kkt));
-        return color;*/
 
         //Refraction \\ transparency light.
         double kkt = k * material.kT;
@@ -121,7 +100,7 @@ public class RayTracerBasic extends RayTracerBase {
             if (!scene.diffuseEnabled || isZero(material.diffuseRadius))//No diffuse affect.
                 color = color.add(calcGlobalEffect(constructRefractedRay(gp.point, v, n), level, material.kT, kkt));
             else {
-                color = color.add(calcGlossiness(constructRefractedRay(gp.point, v, n), material.diffuseRadius, level, material.kT, kkt));
+                color = color.add(calcGlossyDiffuse(constructRefractedRay(gp.point, v, n), material.diffuseRadius, level, material.kT, kkt));
             }
         return color;
     }
@@ -339,7 +318,7 @@ public class RayTracerBasic extends RayTracerBase {
     }
 
     /**
-     * calculates the average color around a given ray's intersection.
+     * calculates the average color around a given ray's intersection - for the glossy or defuse effect of the material.
      *
      * @param ray the ray to calculate average color around its intersection.
      * @param radius the radius the cone of rays around the original ray
@@ -348,7 +327,7 @@ public class RayTracerBasic extends RayTracerBase {
      * @param kk kk parameter to send to calcGlobalEffect
      * @return the average color around the given ray's intersection.
      */
-    private Color calcGlossiness(Ray ray, double radius, int level, double k, double kk) {
+    private Color calcGlossyDiffuse(Ray ray, double radius, int level, double k, double kk) {
         //calculate the original color coming from the original ray.
         Color color = calcGlobalEffect(ray, level, k, kk);
 
@@ -371,6 +350,14 @@ public class RayTracerBasic extends RayTracerBase {
         return color.reduce(scene.numGlossyDiffuseRays + 1);
     }
 
+    /**
+     * calculate the vertices of a regular polygon given its center, radius, number of vertices, and axis vector/
+     * @param center point representing the center of the polygon
+     * @param radius the radius of the polygon
+     * @param numVertices number of vertices in the polygon
+     * @param axis axis vector of the polygon
+     * @return returns a list of points that are the regular polygon's vertices.
+     */
     private ArrayList<Point3D> getRegularPolygonVertices(Point3D center, double radius, int numVertices, Vector axis) {
         //find the perpendicular vector to the axis
         Vector toRotate = findPerpendicular(axis).normalize();
