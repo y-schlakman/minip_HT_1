@@ -34,7 +34,11 @@ public class GlossyDiffuseTests {
      */
     @Test
     public void TargetPracticeTest() {
-        Camera camera = new Camera(new Point3D(0, 150, 0), new Vector(0, 0, 1), new Vector(0, 1, 0)) //
+        double camAngleX = 0.1, camAngleY = 0;
+
+        Camera camera = new Camera(new Point3D(0, 450, 0),
+                new Vector(0, 0, 1).RotateX(camAngleX).RotateY(camAngleY),
+                new Vector(0, 1, 0).RotateX(camAngleX).RotateY(camAngleY)) //
                 .setViewPlaneSize(150, 150).setDistance(1000);
 
         scene.setAmbientLight(new AmbientLight(new Color(java.awt.Color.PINK), 0.25))
@@ -48,7 +52,7 @@ public class GlossyDiffuseTests {
          */
         double initialDepth = 2000;
         double wallHeight = 1000;
-        double floorWidth = 300, floorDepth = 500;
+        double floorWidth = 300, floorDepth = 3000;
         scene.geometries.add(
                 /*
                     B       C
@@ -72,8 +76,9 @@ public class GlossyDiffuseTests {
         /*
         Target board.
          */
-        double standWidth = 20, standHeight = 100;
-        double boardDimention = 150;
+        double standWidth = 20, standHeight = 75, standFromWall = 30;
+        double boardDimension = 225;
+        double boardDepth = initialDepth + floorDepth - standFromWall;
         scene.geometries.add(
                 /*
                     X           Y
@@ -83,21 +88,21 @@ public class GlossyDiffuseTests {
                         A   D
                  */
 
-                new Polygon(new Point3D(-standWidth/2, 0, initialDepth + floorDepth/2), new Point3D(-standWidth/2, standHeight, initialDepth + floorDepth/2),
-                        new Point3D(standWidth/2, standHeight, initialDepth + floorDepth/2), new Point3D(standWidth/2, 0, initialDepth + floorDepth/2))
+                new Polygon(new Point3D(-standWidth/2, 0, boardDepth), new Point3D(-standWidth/2, standHeight, boardDepth),
+                        new Point3D(standWidth/2, standHeight, boardDepth), new Point3D(standWidth/2, 0, boardDepth))
                         .setEmission(new Color(255, 153, 0))
                         .setMaterial(new Material().setkD(0.5).setkS(0.5).setnShininess(50)),
 
-                new Polygon(new Point3D(-boardDimention/2, standHeight, initialDepth + floorDepth/2), new Point3D(-boardDimention/2, standHeight + boardDimention, initialDepth + floorDepth/2),
-                        new Point3D(boardDimention/2, standHeight + boardDimention, initialDepth + floorDepth/2), new Point3D(boardDimention/2, standHeight, initialDepth + floorDepth/2))
+                new Polygon(new Point3D(-boardDimension/2, standHeight, boardDepth), new Point3D(-boardDimension/2, standHeight + boardDimension, boardDepth),
+                        new Point3D(boardDimension/2, standHeight + boardDimension, boardDepth), new Point3D(boardDimension/2, standHeight, boardDepth))
                         .setEmission(new Color(255, 153, 0))
                         .setMaterial(new Material().setkD(0.5).setkS(0.5).setnShininess(50))
 
                 /*
                 new Polygon(
                         new Point3D(-standWidth/2, 0, initialDepth + floorDepth/2), new Point3D(-standWidth/2, standHeight, initialDepth + floorDepth/2),
-                        new Point3D(-boardDimention/2, standHeight, initialDepth + floorDepth/2), new Point3D(-boardDimention/2, standHeight + boardDimention, initialDepth + floorDepth/2),
-                        new Point3D(boardDimention/2, standHeight + boardDimention, initialDepth + floorDepth/2), new Point3D(boardDimention/2, standHeight, initialDepth + floorDepth/2),
+                        new Point3D(-boardDimension/2, standHeight, initialDepth + floorDepth/2), new Point3D(-boardDimension/2, standHeight + boardDimension, initialDepth + floorDepth/2),
+                        new Point3D(boardDimension/2, standHeight + boardDimension, initialDepth + floorDepth/2), new Point3D(boardDimension/2, standHeight, initialDepth + floorDepth/2),
                         new Point3D(standWidth/2, standHeight, initialDepth + floorDepth/2), new Point3D(standWidth/2, 0, initialDepth + floorDepth/2)
                 )
                 */
@@ -105,7 +110,7 @@ public class GlossyDiffuseTests {
 
 
         //Target polygons.
-        double cbX = 0, cby = standHeight + boardDimention/2;//Center board coordinates
+        double cbX = 0, cby = standHeight + boardDimension/2;//Center board coordinates
         int numCircles = 10, numVerticies = 20;
         double distCircleFromBoard = 10, minRadius = 1;
         double distBetweenPoly = 1;
@@ -115,11 +120,11 @@ public class GlossyDiffuseTests {
             Vector vDown = new Vector(0, -1, 0);
             double angle = 2 * Math.PI / (double) numVerticies;
             double radius = minRadius +
-                    ((double) (numCircles-i) / (double) numCircles) * ((boardDimention / 2) - distCircleFromBoard - minRadius);
+                    ((double) (numCircles-i) / (double) numCircles) * ((boardDimension / 2) - distCircleFromBoard - minRadius);
             for (int j = 0; j < numVerticies; ++j) {
                 poly.add(vDown.RotateZ(angle * j).scale(radius).getHead()
                         .add(new Vector(0,0,-1).scale((i+1)*distBetweenPoly))
-                        .add(new Vector(0,cby,initialDepth + floorDepth/2)));
+                        .add(new Vector(0,cby,boardDepth)));
             }
             scene.geometries.add(
                     new Polygon(poly.toArray(new Point3D[poly.size()]))
@@ -128,9 +133,9 @@ public class GlossyDiffuseTests {
             );
         }
 
-        double scopeDepth = 1000;
-        double scopeScale = 7;
-        double scopeDx = -17, scopeDy = 150;
+        double scopeDepth = 1400;
+        double scopeScale = 13;
+        double scopeDx = -20, scopeDy = 350;
         Point3D pa = new Point3D(-3.8*scopeScale + scopeDx, -1.8*scopeScale + scopeDy, scopeDepth);
         Point3D pb = new Point3D(-1.5*scopeScale + scopeDx, -1.8*scopeScale + scopeDy, scopeDepth);
         Point3D pc = new Point3D(0.2 *scopeScale + scopeDx, -0.1*scopeScale + scopeDy, scopeDepth);
@@ -219,8 +224,8 @@ public class GlossyDiffuseTests {
 
         double lightAngleX1 = Math.toRadians(0); //Up\down.
         double lightAngleY1 = Math.toRadians(20); //Left\right.
-        double lightAngleX2 = Math.toRadians(25); //Up\down.
-        double lightAngleY2 = Math.toRadians(-15); //Left\right.
+        double lightAngleX2 = Math.toRadians(70); //Up\down.
+        double lightAngleY2 = Math.toRadians(-4); //Left\right.
 
         scene.lights.add( //
                 new DirectionalLight(new Color(java.awt.Color.WHITE).reduce(5),
@@ -236,7 +241,7 @@ public class GlossyDiffuseTests {
 
 
         Render render = new Render() //
-                .setImageWriter(new ImageWriter("TargetPractice", 300, 300)) //
+                .setImageWriter(new ImageWriter("TargetPracticeWithGloss", 600, 600)) //
                 .setCamera(camera) //
                 .setRayTracer(new RayTracerBasic(scene));
         render.renderImage();
