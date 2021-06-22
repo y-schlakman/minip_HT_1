@@ -38,19 +38,21 @@ public class GlossyDiffuseTests {
                 new Vector(0, 1, 0).RotateX(camAngleX).RotateY(camAngleY)) //
                 .setViewPlaneSize(150, 150).setDistance(1000);
 
-        scene.setDiffuseEnabled(false)
-                .setGlossyEnabled(false)
+        scene.setDiffuseEnabled(true)
+                .setGlossyEnabled(true)
                 .setNumGlossyDiffuseRays(15);
 
 
         /*
         Walls and floor.
          */
-        double initialDepth = 2000;
+        double initialDepth = 2000; //The starting depth of the floor.
         double wallHeight = 1000;
-        double floorWidth = 300, floorDepth = 3000;
+        double floorWidth = 300, floorDepth = 3000; //Additional depth to the floor beyond 'initialDepth'
         scene.geometries.add(
                 /*
+                These letters describe by alphabetical order the positions
+                of the two planes (wall ABCD, floor WXYZ):
                     B       C
 
                     A,W       D,X
@@ -72,6 +74,7 @@ public class GlossyDiffuseTests {
         /*
         Target board.
          */
+        //The board is split by construction from the stand its on.
         double standWidth = 20, standHeight = 75, standFromWall = 30;
         double boardDimension = 225;
         double boardDepth = initialDepth + floorDepth - standFromWall;
@@ -99,15 +102,18 @@ public class GlossyDiffuseTests {
         //Target polygons.
         double cbX = 0, cby = standHeight + boardDimension/2;//Center board coordinates
         int numCircles = 10, numVerticies = 20;
-        double distCircleFromBoard = 0.1, minRadius = 1;
-        double distBetweenPoly = 0.1;
+        double distCircleFromBoard = 0.1, minRadius = 1; // variables used to define the largest and smallest circles -
+        //radius, and from there we can linearly interpolate according to the amount of circles 'numCircles'.
+        double distBetweenPoly = 0.1; //distance ensuring a gap between the board and the target.
         List<Point3D> poly = new ArrayList<>();
+        //Outer loop creates polygons ('circles') and adds them to the board.
         for(int i = 0; i < numCircles; ++i ) {
             poly.clear();
             Vector vDown = new Vector(0, -1, 0);
             double angle = 2 * Math.PI / (double) numVerticies;
             double radius = minRadius +
                     ((double) (numCircles-i) / (double) numCircles) * ((boardDimension / 2) - distCircleFromBoard - minRadius);
+            //Inner loop creates each vertex and adds it to current polygon ('circle').
             for (int j = 0; j < numVerticies; ++j) {
                 poly.add(vDown.RotateZ(angle * j).scale(radius).getHead()
                         .add(new Vector(0,0,-1).scale((i+1)*distBetweenPoly))
@@ -120,11 +126,12 @@ public class GlossyDiffuseTests {
             );
         }
 
-        double scopeDepth = 1400;
+        //Variables defining scope features:
+        double scopeDepth = 1400; //Independant of other geometries in the room and their depth.
         double scopeScale = 13;
-        double scopeThickness = 0;
         double scopeDx = 5, scopeDy = 350;
 
+        //A list of hard-coded points defining the scope and its frame:
         Point3D pa = new Point3D(-3.8*scopeScale + scopeDx, -1.8*scopeScale + scopeDy, scopeDepth);
         Point3D pb = new Point3D(-1.5*scopeScale + scopeDx, -1.8*scopeScale + scopeDy, scopeDepth);
         Point3D pc = new Point3D(0.2 *scopeScale + scopeDx, -0.1*scopeScale + scopeDy, scopeDepth);
@@ -142,6 +149,7 @@ public class GlossyDiffuseTests {
         Point3D pk = new Point3D(-4.03*scopeScale + scopeDx, -2.37*scopeScale + scopeDy, scopeDepth);
         Point3D pl = new Point3D(-6.07*scopeScale + scopeDx, 2.43*scopeScale + scopeDy, scopeDepth);
 
+        //Creating the scopes frame (each polygon must be convex so one must split it into pieces).
         List<Polygon> scopeBoarder = new ArrayList<Polygon>();
         scopeBoarder.add( new Polygon(pq, pr, pe, pf));
         scopeBoarder.add( new Polygon(pr, pi, pd, pe));
@@ -162,7 +170,9 @@ public class GlossyDiffuseTests {
         .setMaterial(new Material().setkT(1).setkD(0.1).setkS(0.1).setDiffuseRadius(3))
                 );
 
+        //Cross-hair features, affectively two rectangles across the scope.
         double crosshairWidth = 0.2, crosshairDelta = 0.5;
+        //The following are midpoints pre-calculated to make crosshair calculations simpler.
         Point3D pab = new Point3D((pa.getX().getCoord() + pb.getX().getCoord())/2, pa.getY().getCoord(), pa.getZ().getCoord() - crosshairDelta);
         Point3D pfe = new Point3D((pf.getX().getCoord() + pe.getX().getCoord())/2, pf.getY().getCoord(), pf.getZ().getCoord() - crosshairDelta);
         Point3D pgh = new Point3D(pg.getX().getCoord(), (pg.getY().getCoord() + ph.getY().getCoord())/2, pg.getZ().getCoord() - crosshairDelta);
@@ -187,6 +197,7 @@ public class GlossyDiffuseTests {
                         .setMaterial(new Material())
         );
 
+        //The gun has three parts defined as follows:
         double gunLength = 100, gunHeight = 2, gunWidth = 1.3;
         Point3D rightGunVertex = pk.add(new Vector(-1,0,0).scale(scopeScale*gunWidth));
         Point3D leftGunVertex = ps.add(new Vector(1,0,0).scale(scopeScale*gunWidth));
@@ -219,6 +230,7 @@ public class GlossyDiffuseTests {
 
                 );
 
+        //Light angles.
         double lightAngleX1 = Math.toRadians(0); //Up\down.
         double lightAngleY1 = Math.toRadians(20); //Left\right.
         double lightAngleX2 = Math.toRadians(70); //Up\down.
@@ -240,7 +252,7 @@ public class GlossyDiffuseTests {
         );
 
         Render render = new Render() //
-                .setImageWriter(new ImageWriter("TargetPracticeWithoutGloss", 600, 600))
+                .setImageWriter(new ImageWriter("TargetPractice", 600, 600))
                 .setCamera(camera) //
                 .setRayTracer(new RayTracerBasic(scene));
         render.renderImage();
