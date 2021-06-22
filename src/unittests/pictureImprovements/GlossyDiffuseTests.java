@@ -38,8 +38,8 @@ public class GlossyDiffuseTests {
                 new Vector(0, 1, 0).RotateX(camAngleX).RotateY(camAngleY)) //
                 .setViewPlaneSize(150, 150).setDistance(1000);
 
-        scene.setDiffuseEnabled(true)
-                .setGlossyEnabled(true)
+        scene.setDiffuseEnabled(false)
+                .setGlossyEnabled(false)
                 .setNumGlossyDiffuseRays(15);
 
 
@@ -240,7 +240,7 @@ public class GlossyDiffuseTests {
         );
 
         Render render = new Render() //
-                .setImageWriter(new ImageWriter("TargetPracticeWithGloss", 600, 600))
+                .setImageWriter(new ImageWriter("TargetPracticeWithoutGloss", 600, 600))
                 .setCamera(camera) //
                 .setRayTracer(new RayTracerBasic(scene));
         render.renderImage();
