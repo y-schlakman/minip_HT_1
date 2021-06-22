@@ -11,8 +11,8 @@ import java.util.ArrayList;
  */
 public class Sphere extends Geometry{
 
-    final private Point3D _center;
-    final private double _radius;
+    final private Point3D _center; //The center of the sphere.
+    final private double _radius; //The radius of the sphere.
 
     /**
      * constructor for sphere that gets the center and the radius of the sphere.
@@ -42,6 +42,12 @@ public class Sphere extends Geometry{
         return _radius;
     }
 
+    /**
+     * Calculates the normal to the sphere at a given point.
+     *
+     * @param point a point on the geometry
+     * @return The resulting normal.
+     */
     @Override
     public Vector getNormal(Point3D point) {
         return point.subtract(_center).normalize();

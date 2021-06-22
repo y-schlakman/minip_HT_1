@@ -4,9 +4,22 @@ import primitives.Color;
 import primitives.Point3D;
 import primitives.Vector;
 
+/**
+ * Class representing a spot light light-source.
+ *
+ * @author Yosi and Eli.
+ */
 public class SpotLight extends PointLight{
-    private Vector direction;
 
+    private Vector direction;//The direction the spot light is pointing in.
+
+    /**
+     * Constructor method for spot light light-source.
+     *
+     * @param intensity The colour of the light produced.
+     * @param position The origin/position of the light source.
+     * @param direction_ The direction the spot light is point to.
+     */
     public SpotLight(Color intensity, Point3D position, Vector direction_){
         super(intensity, position);
         direction = direction_;

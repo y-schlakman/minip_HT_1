@@ -13,15 +13,27 @@ import java.util.stream.Collectors;
 
 public interface Intersectable {
 
+    /**
+     * Class representing a point with repsect to a geometry it belongs to.
+     *
+     * @author Yosi and Eli.
+     */
     public static class GeoPoint {
-        public Geometry geometry;
-        public Point3D point;
+        public Geometry geometry; //The points geometry.
+        public Point3D point;   //The points location.
 
+        /**
+         * Constructor for GeoPoint.
+         *
+         * @param geometry_ The geometry the point belongs to.
+         * @param point_    The location of the point.
+         */
         public GeoPoint(Geometry geometry_, Point3D point_)
         {
             geometry = geometry_;
             point = point_;
         }
+
 
         @Override
         public boolean equals(Object obj) {

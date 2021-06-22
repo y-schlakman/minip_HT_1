@@ -4,7 +4,7 @@ package primitives;
  * The vector class is used to represent a mathematical vector in the 3 dimentional cartesian space.
  * This class is used in many calculations such as lighting, collision etc.
  *
- * @author Eli and Yosi.
+ * @author Yosi and Eli.
  */
 public class Vector {
     /**

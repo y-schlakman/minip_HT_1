@@ -8,7 +8,7 @@ import primitives.*;
  */
 public class Cylinder extends Tube {
 
-    final private double _height;
+    final private double _height; //Height of cylinder i.e. its length along its axis.
 
     /**
      * constructor for cylinder that gets the axis ray, radius, and height of the cylinder. (radius and height must be positive).
@@ -31,11 +31,21 @@ public class Cylinder extends Tube {
         return _height;
     }
 
+    /**
+     * Calculates the normal vector to the cylinders surface on a given point.
+     *
+     * @param point The point to find its normal.
+     * @return The normal at the given point.
+     */
     @Override
     public Vector getNormal(Point3D point) {
         return null;
     }
 
+    /**
+     * Converts the stored geometric information into a representable string.
+     * @return A string describing the cylinders geometrical properties.
+     */
     @Override
     public String toString() {
         return "Cylinder{" +

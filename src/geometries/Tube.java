@@ -12,8 +12,8 @@ import static primitives.Util.isZero;
  */
 public class Tube extends Geometry {
 
-    final private Ray _axisRay;
-    final private double _radius;
+    final private Ray _axisRay; //Directing axis of tube.
+    final private double _radius;   //The tubes radius.
 
     /**
      * constructor for tube that gets the axis ray and the radius of the tube. (radius must be positive).
@@ -46,6 +46,12 @@ public class Tube extends Geometry {
         return _radius;
     }
 
+    /**
+     * Calculates the normal vector to the tubes surface at a given point.
+     *
+     * @param point a point on the geometry
+     * @return The resulting normal vector.
+     */
     @Override
     public Vector getNormal(Point3D point) {
         //if point is in line with head of the ray treat like a sphere
@@ -59,6 +65,13 @@ public class Tube extends Geometry {
         return point.subtract(o).normalize();
     }
 
+    /**
+     * Finds all intersection points (with respect to this tube as their underlying geometry)
+     * between this tube and a given ray.
+     *
+     * @param ray the ray intersecting the geometry.
+     * @return
+     */
     @Override
     public List<GeoPoint> findGeoIntersections(Ray ray) {
         return null;

@@ -12,13 +12,11 @@ import static primitives.Util.*;
  * @author Dan
  */
 public class Polygon extends Geometry {
-	/**
-	 * List of polygon's vertices
-	 */
+
+	//List of polygon's vertices.
 	protected List<Point3D> vertices;
-	/**
-	 * Associated plane in which the polygon lays
-	 */
+
+	//Associated plane in which the polygon lays.
 	protected Plane plane;
 
 	/**
@@ -83,6 +81,13 @@ public class Polygon extends Geometry {
 		}
 	}
 
+	/**
+	 * Calculates normal vector to this polygon
+	 * at a given point (affectively gets normal to underlying plane).
+	 *
+	 * @param point a point on the geometry.
+	 * @return Normal vector to this polygon.
+	 */
 	@Override
 	public Vector getNormal(Point3D point) {
 		// plane.getNormal();

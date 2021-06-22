@@ -13,9 +13,10 @@ import java.util.MissingResourceException;
  * @author Yosi and Eli
  */
 public class Render {
-    private ImageWriter imageWriter;
-    private Camera camera;
-    private RayTracerBase rayTracer;
+
+    private ImageWriter imageWriter; //The 'ImgaeWriter' object to write with.
+    private Camera camera;  //The camera used to render the scene.
+    private RayTracerBase rayTracer;    //'RayTracerBase' base instance to use for render and color calculations.
 
     /**
      * setter for imageWriter

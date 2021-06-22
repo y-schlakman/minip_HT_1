@@ -1,5 +1,10 @@
 package primitives;
 
+/**
+ * Class representing a geometry, used in association with a geometry.
+ *
+ * @author Yosi and Eli.
+ */
 public class Material {
     /**
      * kD is diffuse coefficient

@@ -13,8 +13,8 @@ import java.util.List;
  */
 public class Plane extends Geometry {
 
-    final private Point3D q0;
-    final private Vector _normal;
+    final private Point3D q0;   //A point belonging to th plane.
+    final private Vector _normal;   //The normal vector to the plane.
 
     /**
      * constructor for plane that gets point on plane and normal vector.
@@ -79,6 +79,12 @@ public class Plane extends Geometry {
         return null;
     }
 
+    /**
+     * Getter-method/calculation for normal to this plane.
+     *
+     * @param point a point on the geometry
+     * @return The normal to he plane.
+     */
     @Override
     public Vector getNormal(Point3D point) {
         return _normal;

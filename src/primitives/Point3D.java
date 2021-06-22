@@ -10,29 +10,40 @@ import java.lang.*;
 
 public class Point3D {
 
+    //A static, constant point useful to describe the origin of axis or degenerate objects.
     public final static Point3D ZERO = new Point3D(0,0,0);
 
-    //**The three values describing position along the respective axis.*/
-
+    /**
+     * Getter method for distance along the x axis.
+     * @return Distance along x axis.
+     */
     public Coordinate getX() {
         return x;
     }
 
+    /**
+     * Getter method for distance along the y axis.
+     * @return Distance along y axis.
+     */
     public Coordinate getY() {
         return y;
     }
 
+    /**
+     * Getter method for distance along the z axis.
+     * @return Distance along z axis.
+     */
     public Coordinate getZ() {
         return z;
     }
 
-    /**Value along the x axis.*/
+    //Value along the x axis.
     final Coordinate x;
 
-    /**Value along the y axis.*/
+    //Value along the y axis.
     final Coordinate y;
 
-    /**Value along the z axis.*/
+    //Value along the z axis.
     final Coordinate z;
 
     /**

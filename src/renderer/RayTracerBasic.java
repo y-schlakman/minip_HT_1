@@ -36,6 +36,12 @@ public class RayTracerBasic extends RayTracerBase {
         super(scene);
     }
 
+    /**
+     * Finds the color of the ray traveling through this scene.
+     *
+     * @param ray the ray to trace
+     * @return The resulting colour.
+     */
     @Override
     public Color traceRay(Ray ray) {
         GeoPoint closest = findClosestIntersection(ray);
@@ -85,6 +91,7 @@ public class RayTracerBasic extends RayTracerBase {
         Vector n = gp.geometry.getNormal(gp.point);
         Material material = gp.geometry.getMaterial();
 
+        //Reflective / glossy reflection.
         double kkr = k * material.kR;
         if (kkr > MIN_CALC_COLOR_K) {
             if (!scene.glossyEnabled || isZero(material.glossyRadius))//No glossy affect.
@@ -296,6 +303,13 @@ public class RayTracerBasic extends RayTracerBase {
         double y = n.getHead().getY().getCoord();
         double z = n.getHead().getZ().getCoord();
 
+        /*
+        The underlying idea is we need to, given x, y, z; find some a, b, c,
+        Such that ax + by + cz = 0. There for one can theoretically guess 2 of the three
+        and find the third (WOLOG lets say c) : c = -(ax + by)/z.
+        There is an issue however in case x,y, or z are zero (the division wouldn't work).
+        Therefore we split into cases searching for a non-zero variable to perform similar algebraic completion.
+         */
         double a, b, c;
         if (x == 0) {
             a = 1;

@@ -11,8 +11,14 @@ import primitives.Vector;
  */
 public class DirectionalLight extends Light implements LightSource{
 
-    private Vector direction;
+    private Vector direction; //The direction the light source points to (from 'infinite distance').
 
+    /**
+     * Constructor for Directional light.
+     *
+     * @param intensity The color of the light source.
+     * @param direction_ The direction of the light source.
+     */
     public DirectionalLight(Color intensity, Vector direction_){
         super(intensity);
         direction = direction_;
@@ -41,6 +47,13 @@ public class DirectionalLight extends Light implements LightSource{
         return direction.normalized();
     }
 
+    /**
+     * Calculates distance between this light source and given point.
+     * For directional lights, the light source is considered to be infinitely distant.
+     *
+     * @param point the point from which to calculate the distance to the light source.
+     * @return Infinity (distance from a directional light source).
+     */
     @Override
     public double getDistance(Point3D point) {
         return Double.POSITIVE_INFINITY;

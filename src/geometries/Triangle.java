@@ -18,6 +18,13 @@ public class Triangle extends Polygon {
         super(p1, p2, p3);
     }
 
+    /**
+     * Calculates the normal to this triangle
+     * at a given point (affectively returns normal to underlying plane).
+     *
+     * @param point a point on the geometry.
+     * @return The resulting normal vector.
+     */
     @Override
     public Vector getNormal(Point3D point) {
         return plane.getNormal(point);
