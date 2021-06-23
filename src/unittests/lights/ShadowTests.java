@@ -15,7 +15,7 @@ import scene.Scene;
  */
 public class ShadowTests {
     private Scene scene = new Scene("Test scene");
-    private Camera camera = new Camera(new Point3D(0, 0, 1000), new Vector(0, 0, -1), new Vector(0, 1, 0)) //
+    private Camera camera = new Camera(new Point3D(0, 0, 1000), new Vector(0, 0, -1), new Vector(0, 1, 0))
             .setViewPlaneSize(200, 200).setDistance(1000);
 
     /**

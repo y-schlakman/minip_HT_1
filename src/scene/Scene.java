@@ -20,16 +20,12 @@ public class Scene {
      * ambientLight - color of scene's ambient light
      * geometries - list of geometries in the scene
      * lights - list of lights in the scene
-     * numGlossyDiffuseRays - number of gloss and diffuse rays to be cast
      */
     public String name;
     public Color background;
     public AmbientLight ambientLight;
     public Geometries geometries;
     public List<LightSource> lights =  new LinkedList<LightSource>();
-    public int numGlossyDiffuseRays;
-    public boolean glossyEnabled;
-    public boolean diffuseEnabled;
 
     /**
      * constructor for Scene that gets the scene name and sets all fields to default
@@ -40,9 +36,6 @@ public class Scene {
         background = Color.BLACK;
         ambientLight = new AmbientLight();
         geometries = new Geometries();
-        numGlossyDiffuseRays = 10;
-        glossyEnabled = true;
-        diffuseEnabled = true;
     }
 
     /**
@@ -82,40 +75,6 @@ public class Scene {
      */
     public Scene setLights(List<LightSource> lights) {
         this.lights = lights;
-        return this;
-    }
-
-    /**
-     * setter for the number of glossy and defuse rays to be cast in the scene's color calculations.
-     *
-     * @param numRays the desired number of rays.
-     * @return instance of current scene.
-     */
-    public Scene setNumGlossyDiffuseRays(int numRays){
-        if(numRays < 0) {
-            throw new IllegalArgumentException("number of rays must be zero or larger");
-        }
-        numGlossyDiffuseRays = numRays;
-        return this;
-    }
-
-    /**
-     * setter for glossyEnabled value.
-     *
-     * @param glossyEnabled the desired glossyEnabled value - if true then gloss is enabled in the scene, if false then it is disabled.
-     */
-    public Scene setGlossyEnabled(boolean glossyEnabled) {
-        this.glossyEnabled = glossyEnabled;
-        return this;
-    }
-
-    /**
-     * setter for diffuseEnabled value.
-     *
-     * @param diffuseEnabled the desired diffuseEnabled value - if true then diffuse is enabled in the scene, if false then it is disabled.
-     */
-    public Scene setDiffuseEnabled(boolean diffuseEnabled) {
-        this.diffuseEnabled = diffuseEnabled;
         return this;
     }
 }

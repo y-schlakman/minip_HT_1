@@ -22,10 +22,16 @@ public class RayTracerBasic extends RayTracerBase {
      * MAX_CALC_COLOR_LEVEL is the amount of levels we allow the recursive calculation of light to run for.
      * MIN_CALC_COLOR_K the k below which we consider a coefficient insignificant and consider it as zero.
      * INITIAL_K is the constant that scales the coefficients in our calculations by zero to one (zero - use none its value, one - use all of its value).
+     * numGlossyDiffuseRays - number of gloss and diffuse rays to be cast
+     * glossyEnabled - boolean value indicating if gloss is enabled.
+     * diffuseEnabled - boolean value indicating if diffuse is enabled.
      */
     private static final int MAX_CALC_COLOR_LEVEL = 10;
     private static final double MIN_CALC_COLOR_K = 0.001;
     private static final double INITIAL_K = 1.0;
+    public int numGlossyDiffuseRays = 10;
+    public boolean glossyEnabled = true;
+    public boolean diffuseEnabled = true;
 
     /**
      * constructor that gets a scene
@@ -34,6 +40,42 @@ public class RayTracerBasic extends RayTracerBase {
      */
     public RayTracerBasic(Scene scene) {
         super(scene);
+    }
+
+    /**
+     * setter for the number of glossy and defuse rays to be cast in the scene's color calculations.
+     *
+     * @param numRays the desired number of rays.
+     * @return this instance of rayTracerBasic.
+     */
+    public RayTracerBasic setNumGlossyDiffuseRays(int numRays){
+        if(numRays < 0) {
+            throw new IllegalArgumentException("number of rays must be zero or larger");
+        }
+        numGlossyDiffuseRays = numRays;
+        return this;
+    }
+
+    /**
+     * setter for glossyEnabled value.
+     *
+     * @param glossyEnabled the desired glossyEnabled value - if true then gloss is enabled in the scene, if false then it is disabled.
+     * @return this instance of rayTracerBasic.
+     */
+    public RayTracerBasic setGlossyEnabled(boolean glossyEnabled) {
+        this.glossyEnabled = glossyEnabled;
+        return this;
+    }
+
+    /**
+     * setter for diffuseEnabled value.
+     *
+     * @param diffuseEnabled the desired diffuseEnabled value - if true then diffuse is enabled in the scene, if false then it is disabled.
+     * @return this instance of rayTracerBasic.
+     */
+    public RayTracerBasic setDiffuseEnabled(boolean diffuseEnabled) {
+        this.diffuseEnabled = diffuseEnabled;
+        return this;
     }
 
     /**
@@ -94,7 +136,7 @@ public class RayTracerBasic extends RayTracerBase {
         //Reflective / glossy reflection.
         double kkr = k * material.kR;
         if (kkr > MIN_CALC_COLOR_K) {
-            if (!scene.glossyEnabled || isZero(material.glossyRadius))//No glossy affect.
+            if (!glossyEnabled || isZero(material.glossyRadius))//No glossy affect.
                 color = calcGlobalEffect(constructReflectedRay(gp.point, v, n), level, material.kR, kkr);
             else {
                 color = calcGlossyDiffuse(constructReflectedRay(gp.point, v, n), material.glossyRadius, level, material.kR, kkr);
@@ -104,7 +146,7 @@ public class RayTracerBasic extends RayTracerBase {
         //Refraction \\ transparency light.
         double kkt = k * material.kT;
         if (kkt > MIN_CALC_COLOR_K)
-            if (!scene.diffuseEnabled || isZero(material.diffuseRadius))//No diffuse affect.
+            if (!diffuseEnabled || isZero(material.diffuseRadius))//No diffuse affect.
                 color = color.add(calcGlobalEffect(constructRefractedRay(gp.point, v, n), level, material.kT, kkt));
             else {
                 color = color.add(calcGlossyDiffuse(constructRefractedRay(gp.point, v, n), material.diffuseRadius, level, material.kT, kkt));
@@ -130,6 +172,7 @@ public class RayTracerBasic extends RayTracerBase {
     /**
      * calculates the local light effects color at an intersection point
      *
+     * @param k the coefficient of the color
      * @param intersection the point for which we want the local light effects color
      * @param ray          the ray from camera through view plane that intersects our point
      * @return the local light effects color at the given point
@@ -194,6 +237,7 @@ public class RayTracerBasic extends RayTracerBase {
     /**
      * checks if a given point is shaded from a given light source by another object in the scene
      *
+     * @param light the light to check if shaded from
      * @param l  the direction of the light
      * @param n  normal vector from the point
      * @param gp geo-point representing the point for which we are checking if it is shaded from the light
@@ -353,7 +397,7 @@ public class RayTracerBasic extends RayTracerBase {
             return color;
 
         //number of rays to cast - if it is an uneven number correct to an even number
-        int numVerticesInPolygon = scene.numGlossyDiffuseRays % 2 == 0? scene.numGlossyDiffuseRays / 2 : (scene.numGlossyDiffuseRays + 1) / 2;
+        int numVerticesInPolygon = numGlossyDiffuseRays % 2 == 0? numGlossyDiffuseRays / 2 : (numGlossyDiffuseRays + 1) / 2;
 
         //the points through which the additional rays should pass through
         ArrayList<Point3D> vertexPoints = getRingRegularPolygonVertices(intersection.point, radius, numVerticesInPolygon, ray.get_dir().normalized());
@@ -364,7 +408,7 @@ public class RayTracerBasic extends RayTracerBase {
         }
 
         //return the average of all the rays colors
-        return color.reduce(scene.numGlossyDiffuseRays + 1);
+        return color.reduce(numGlossyDiffuseRays + 1);
     }
 
     /**

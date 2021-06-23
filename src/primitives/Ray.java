@@ -73,6 +73,11 @@ public class Ray {
         return _dir;
     }
 
+    /**
+     * get the point at head of ray when scaled by a given number
+     * @param t the number to scale the ray by
+     * @return the point at the head of the scaled ray
+     */
     public Point3D getPoint(double t) {
         if (isZero(t)) {
             return _p0;

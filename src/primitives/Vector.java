@@ -32,6 +32,7 @@ public class Vector {
      * ctor using a Point3D object representing the necessary information about
      * the vectors magnitude and direction in the 3 dimensional cartesian space.
      *
+     * @param head a 3d point representing the wanted vectors head
      * @throws IllegalArgumentException if the given point forms a degenerate vector (the zero vector).
      */
     public Vector(Point3D head) {

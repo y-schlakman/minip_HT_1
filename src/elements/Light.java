@@ -9,7 +9,7 @@ import primitives.Color;
  */
 abstract class Light {
 
-    protected Color intensity;
+    protected Color intensity;//the color of the light
 
     /**
      * Getter function for the light's intensity.
