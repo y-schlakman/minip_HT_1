@@ -21,7 +21,7 @@ import java.util.List;
  * @author dzilb
  */
 public class ReflectionRefractionTests {
-    private Scene scene = new Scene("Test scene").setNumGlossyDiffuseRays(3).setDiffuseEnabled(true).setGlossyEnabled(true);
+    private Scene scene = new Scene("Test scene");
 
     /**
      * Produce a picture of a sphere lighted by a spot light
