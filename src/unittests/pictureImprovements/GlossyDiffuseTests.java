@@ -255,5 +255,253 @@ public class GlossyDiffuseTests {
         render.writeToImage();
     }
 
+    @Test
+    public void BallsTest(){
+        double camAngleX = Math.toRadians(12), camAngleY = Math.toRadians(0);
+
+        Camera camera = new Camera(new Point3D(0, 400, 0),
+                new Vector(0, 0, 1).RotateX(camAngleX).RotateY(camAngleY),
+                new Vector(0, 1, 0).RotateX(camAngleX).RotateY(camAngleY)) //
+                .setViewPlaneSize(150, 150).setDistance(1000);
+
+        double floorDepth = 2000;
+        double tileDimension = 20;
+        int numRows = 20, numColumns = 2 * 10;//NumColumns must be even.
+        boolean colorFlag = true;
+        for(int i=0;i<numRows;++i){
+            for(int j=0;j<numColumns/2;++j){
+                scene.geometries.add(
+                        //Left side:
+                        new Polygon(
+                                new Point3D(-j*tileDimension, 0, floorDepth + i*tileDimension), new Point3D(-j*tileDimension, 0, floorDepth + (i+1)*tileDimension),
+                                new Point3D(-(j+1)*tileDimension, 0, floorDepth + (i+1)*tileDimension),new Point3D(-(j+1)*tileDimension, 0, floorDepth + i*tileDimension)
+                        ).setEmission( new Color(colorFlag? java.awt.Color.WHITE: java.awt.Color.BLACK))
+                                .setMaterial(new Material().setkD(0.5).setkS(0.3).setkR(0.2).setGlossyRadius(0.1))
+                        ,
+
+                        //Right side:
+                        new Polygon(
+                                new Point3D(j*tileDimension, 0, floorDepth + i*tileDimension), new Point3D(j*tileDimension, 0, floorDepth + (i+1)*tileDimension),
+                                new Point3D((j+1)*tileDimension, 0, floorDepth + (i+1)*tileDimension),new Point3D((j+1)*tileDimension, 0, floorDepth + i*tileDimension)
+                        ).setEmission( new Color(colorFlag? java.awt.Color.BLACK: java.awt.Color.WHITE))
+                                .setMaterial(new Material().setkD(0.5).setkS(0.3).setkR(0.2).setGlossyRadius(0.1))
+
+                );
+                colorFlag = !colorFlag;
+            }
+            if(numColumns%4 == 0)
+                colorFlag = !colorFlag;
+        }
+
+        //The center of the floors along the z axis (x and y obviously 0). Useful as reference point for the spheres.
+        double floorCenter = floorDepth + (double)numRows*tileDimension/(double)2;
+
+        /*
+        Now adding three spheres:
+        On the left an opaque unreflective red sphere, called 'a'.
+        In the middle an opaque reflective green sphere, called 'b'.
+        On the right a transparent unreflective blue sphere, called 'c'.
+
+        The balls are not placed in a straight line, rather in a semi-circle around the center of the floor.
+         */
+
+        double radA = 10, radB = 15, radC = 13;
+
+        //The radius of the semi-circle the spheres are placed in.
+        double placementRadius = 20;
+
+        //The scale of all of the sphere-system.
+        double sphereScale = 1.5;
+
+        scene.geometries.add(
+                new Sphere(new Point3D(placementRadius*sphereScale, radA*sphereScale, floorCenter), radA*sphereScale)
+                .setEmission(new Color(java.awt.Color.RED))
+                .setMaterial(new Material().setkD(0.5).setkS(0.5).setnShininess(40)),
+
+                new Sphere(new Point3D(0, radB*sphereScale, floorCenter + placementRadius*sphereScale), radB*sphereScale)
+                        .setEmission(new Color(java.awt.Color.GREEN))
+                        .setMaterial(new Material().setkD(0.5).setkS(0.5).setnShininess(40).setkR(0.5).setGlossyRadius(0.1)),
+
+                new Sphere(new Point3D(-placementRadius*sphereScale, radC*sphereScale, floorCenter), radC*sphereScale)
+                        .setEmission(new Color(java.awt.Color.BLUE))
+                        .setMaterial(new Material().setkD(0.5).setkS(0.5).setnShininess(40).setkT(0.5).setDiffuseRadius(0.1))
+        );
+
+
+        /*
+        There are four street-lights, one in each corner of the floor, 1/5 floor width away from the respective edge.
+        See the following diagram: (where '*' represent the boarder of the floor, ['A', 'B', 'C', 'D'] represent a street-light, and '@' a light bulb)
+
+                *************************
+                *                       *
+                *   A@             @B   *
+                *   @               @   *
+                *                       *
+                *                       *
+                *   @               @   *
+                *   D@             @C   *
+                *                       *
+                *************************
+
+         Each light is composed of a stand - centred at 'slCenterX\Z', as wide as 'slWidth', as tall as 'slHeight';
+            and two light-bulbs pointing to the axis-aligned neighboring street-light (see diagram '@'s) - whos radius is 'slBulbRadius'.
+
+         Everything is scaled by 'slScale'.
+         */
+
+        //Calculated and stored once instead of multiple times.
+        double tenthFloorX = numColumns*(double)tileDimension/(double)10;
+        double tenthFloorZ = numRows*(double)tileDimension/(double)10;
+
+        List<Double> slCenterX = new ArrayList<Double>();
+        slCenterX.add(3*tenthFloorX);
+        slCenterX.add(-3*tenthFloorX);
+        slCenterX.add(-3*tenthFloorX);
+        slCenterX.add(3*tenthFloorX);
+
+        List<Double> slCenterZ = new ArrayList<Double>();
+        slCenterZ.add(floorDepth + 8*tenthFloorZ);
+        slCenterZ.add(floorDepth + 8*tenthFloorZ);
+        slCenterZ.add(floorDepth + 2*tenthFloorZ);
+        slCenterZ.add(floorDepth + 2*tenthFloorZ);
+
+        double slWidth = 5, slHeight = 50;
+        double slBulbRadius = 5;
+        double slScale = 1;
+
+        //Variables preventing calling 'get' method many times.
+        double currX, currZ;
+
+        for(int i=0;i<4;++i){
+            currX = slCenterX.get(i);
+            currZ = slCenterZ.get(i);
+            scene.geometries.add(
+                    //Walls of the stand:
+
+                    //Left.
+                    new Polygon(
+                            new Point3D(currX + slScale*slWidth/2, 0, currZ - slScale*slWidth/2),
+                            new Point3D(currX + slScale*slWidth/2, 0, currZ + slScale*slWidth/2),
+                            new Point3D(currX + slScale*slWidth/2, slScale*slHeight, currZ + slScale*slWidth/2),
+                            new Point3D(currX + slScale*slWidth/2, slScale*slHeight, currZ - slScale*slWidth/2)
+                    ).setEmission(new Color(java.awt.Color.WHITE).reduce(4))
+                            .setMaterial(new Material().setkD(0.2).setkS(0.2).setnShininess(20))
+                    ,
+
+                    //Back
+                    new Polygon(
+                            new Point3D(currX + slScale*slWidth/2, 0, currZ + slScale*slWidth/2),
+                            new Point3D(currX + slScale*slWidth/2, slScale*slHeight, currZ + slScale*slWidth/2),
+                            new Point3D(currX - slScale*slWidth/2, slScale*slHeight, currZ + slScale*slWidth/2),
+                            new Point3D(currX - slScale*slWidth/2, 0, currZ + slScale*slWidth/2)
+                    ).setEmission(new Color(java.awt.Color.WHITE).reduce(4))
+                            .setMaterial(new Material().setkD(0.2).setkS(0.2).setnShininess(20))
+                    ,
+
+                    //Right.
+                    new Polygon(
+                            new Point3D(currX - slScale*slWidth/2, 0, currZ - slScale*slWidth/2),
+                            new Point3D(currX - slScale*slWidth/2, 0, currZ + slScale*slWidth/2),
+                            new Point3D(currX - slScale*slWidth/2, slScale*slHeight, currZ + slScale*slWidth/2),
+                            new Point3D(currX - slScale*slWidth/2, slScale*slHeight, currZ - slScale*slWidth/2)
+                    ).setEmission(new Color(java.awt.Color.WHITE).reduce(4))
+                            .setMaterial(new Material().setkD(0.2).setkS(0.2).setnShininess(20))
+                    ,
+
+                    //Front.
+                    new Polygon(
+                            new Point3D(currX + slScale*slWidth/2, 0, currZ - slScale*slWidth/2),
+                            new Point3D(currX + slScale*slWidth/2, slScale*slHeight, currZ - slScale*slWidth/2),
+                            new Point3D(currX - slScale*slWidth/2, slScale*slHeight, currZ - slScale*slWidth/2),
+                            new Point3D(currX - slScale*slWidth/2, 0, currZ - slScale*slWidth/2)
+                    ).setEmission(new Color(java.awt.Color.WHITE).reduce(4))
+                            .setMaterial(new Material().setkD(0.2).setkS(0.2).setnShininess(20))
+                    ,
+
+                    //Top.
+                    new Polygon(
+                            new Point3D(currX + slScale*slWidth/2, slScale*slHeight, currZ - slScale*slWidth/2),
+                            new Point3D(currX + slScale*slWidth/2, slScale*slHeight, currZ + slScale*slWidth/2),
+                            new Point3D(currX - slScale*slWidth/2, slScale*slHeight, currZ + slScale*slWidth/2),
+                            new Point3D(currX - slScale*slWidth/2, slScale*slHeight, currZ - slScale*slWidth/2)
+                    ).setEmission(new Color(java.awt.Color.PINK).reduce(2))
+                            .setMaterial(new Material().setkD(0.2).setkS(0.2).setnShininess(20))
+            );
+
+            //Utility variable representing distance form stands center to any of its bulbs.
+            double toBulb =  slScale*(slWidth/2 + slBulbRadius);
+            double bulbeCenterLeftX = currX + toBulb, bulbeCenterLeftZ = currZ;
+            double bulbeCenterBackX = currX, bulbeCenterBackZ = currZ  + toBulb;
+            double bulbeCenterRightX = currX -toBulb, bulbeCenterRightZ = currZ;
+            double bulbeCenterFrontX = currX, bulbeCenterFrontZ = currZ - toBulb;
+
+            double bulbHeight = slScale*(slHeight-slBulbRadius);
+
+            Color bulbEmission = new Color(java.awt.Color.PINK);
+            Material bulbMaterial = new Material().setkD(0.1).setkS(0.1).setnShininess(3).setkT(0.5).setDiffuseRadius(0.05);
+
+            Color lightColor = new Color(java.awt.Color.PINK).reduce(8);
+
+            //Now adding bulbs according to current light:
+            //Left bulb:
+            if(i == 1 || i == 2){
+                Point3D currCenter = new Point3D(bulbeCenterLeftX, bulbHeight, bulbeCenterLeftZ);
+                scene.geometries.add(
+                        new Sphere(currCenter, slScale*slBulbRadius)
+                                .setEmission(bulbEmission)
+                                .setMaterial(bulbMaterial)
+                );
+                scene.lights.add(new PointLight(lightColor, currCenter));
+            }
+
+            //Back bulb:
+            if(i == 2 || i == 3){
+                Point3D currCenter = new Point3D(bulbeCenterBackX, bulbHeight, bulbeCenterBackZ);
+                scene.geometries.add(
+                        new Sphere(currCenter, slScale*slBulbRadius)
+                                .setEmission(bulbEmission)
+                                .setMaterial(bulbMaterial)
+                );
+                scene.lights.add(new PointLight(lightColor, currCenter));
+            }
+
+            //Right bulb:
+            if(i == 0 || i == 3){
+                Point3D currCenter = new Point3D(bulbeCenterRightX, bulbHeight, bulbeCenterRightZ);
+                scene.geometries.add(
+                        new Sphere(currCenter, slScale*slBulbRadius)
+                                .setEmission(bulbEmission)
+                                .setMaterial(bulbMaterial)
+                );
+                scene.lights.add(new PointLight(lightColor, currCenter));
+            }
+
+            //Front bulb:
+            if(i == 0 || i == 1){
+                Point3D currCenter = new Point3D(bulbeCenterFrontX, bulbHeight, bulbeCenterFrontZ);
+                scene.geometries.add(
+                        new Sphere(currCenter, slScale*slBulbRadius)
+                                .setEmission(bulbEmission)
+                                .setMaterial(bulbMaterial)
+                );
+                scene.lights.add(new PointLight(lightColor, currCenter));
+            }
+
+        }
+
+        Render render = new Render() //
+                .setImageWriter(new ImageWriter("BallsTest", 600, 600))
+                .setCamera(camera) //
+                .setRayTracer(new RayTracerBasic(scene).setGlossyEnabled(false).setDiffuseEnabled(false))
+                .setMultithreading(3);
+        long begin = System.currentTimeMillis();
+        render.renderImage();
+        long end = System.currentTimeMillis();
+        System.out.print("rendered in: " + ((int)(end - begin)/1000)/60 + " minutes ");
+        System.out.print("and " + ((int)(end - begin)/1000)%60 + " seconds.");
+        render.writeToImage();
+
+    }
+
 
 }
