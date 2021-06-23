@@ -103,6 +103,7 @@ public class Scene {
      * setter for glossyEnabled value.
      *
      * @param glossyEnabled the desired glossyEnabled value - if true then gloss is enabled in the scene, if false then it is disabled.
+     * @return returns an instance of the current scene
      */
     public Scene setGlossyEnabled(boolean glossyEnabled) {
         this.glossyEnabled = glossyEnabled;
@@ -113,6 +114,7 @@ public class Scene {
      * setter for diffuseEnabled value.
      *
      * @param diffuseEnabled the desired diffuseEnabled value - if true then diffuse is enabled in the scene, if false then it is disabled.
+     * @return returns an instance of the current scene
      */
     public Scene setDiffuseEnabled(boolean diffuseEnabled) {
         this.diffuseEnabled = diffuseEnabled;

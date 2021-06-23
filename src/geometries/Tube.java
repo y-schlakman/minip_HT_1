@@ -70,7 +70,7 @@ public class Tube extends Geometry {
      * between this tube and a given ray.
      *
      * @param ray the ray intersecting the geometry.
-     * @return
+     * @return the intersection points between the given ray and the tube.
      */
     @Override
     public List<GeoPoint> findGeoIntersections(Ray ray) {

@@ -130,6 +130,7 @@ public class RayTracerBasic extends RayTracerBase {
     /**
      * calculates the local light effects color at an intersection point
      *
+     * @param k the coefficient of the color
      * @param intersection the point for which we want the local light effects color
      * @param ray          the ray from camera through view plane that intersects our point
      * @return the local light effects color at the given point
@@ -194,6 +195,7 @@ public class RayTracerBasic extends RayTracerBase {
     /**
      * checks if a given point is shaded from a given light source by another object in the scene
      *
+     * @param light the light to check if shaded from
      * @param l  the direction of the light
      * @param n  normal vector from the point
      * @param gp geo-point representing the point for which we are checking if it is shaded from the light
