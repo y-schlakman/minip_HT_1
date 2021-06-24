@@ -257,14 +257,14 @@ public class GlossyDiffuseTests {
 
     @Test
     public void BallsTest(){
-        double camAngleX = Math.toRadians(12), camAngleY = Math.toRadians(0);
+        double camAngleX = Math.toRadians(29), camAngleY = Math.toRadians(0);
 
-        Camera camera = new Camera(new Point3D(0, 400, 0),
+        Camera camera = new Camera(new Point3D(0, 1000, 0),
                 new Vector(0, 0, 1).RotateX(camAngleX).RotateY(camAngleY),
                 new Vector(0, 1, 0).RotateX(camAngleX).RotateY(camAngleY)) //
                 .setViewPlaneSize(150, 150).setDistance(1000);
 
-        double floorDepth = 2000;
+        double floorDepth = 1600;
         double tileDimension = 20;
         int numRows = 20, numColumns = 2 * 10;//NumColumns must be even.
         boolean colorFlag = true;
@@ -276,7 +276,7 @@ public class GlossyDiffuseTests {
                                 new Point3D(-j*tileDimension, 0, floorDepth + i*tileDimension), new Point3D(-j*tileDimension, 0, floorDepth + (i+1)*tileDimension),
                                 new Point3D(-(j+1)*tileDimension, 0, floorDepth + (i+1)*tileDimension),new Point3D(-(j+1)*tileDimension, 0, floorDepth + i*tileDimension)
                         ).setEmission( new Color(colorFlag? java.awt.Color.WHITE: java.awt.Color.BLACK))
-                                .setMaterial(new Material().setkD(0.5).setkS(0.3).setkR(0.2).setGlossyRadius(0.1))
+                                .setMaterial(new Material().setkD(0.3).setkS(0.3).setkR(0.4).setGlossyRadius(0.1))
                         ,
 
                         //Right side:
@@ -284,7 +284,7 @@ public class GlossyDiffuseTests {
                                 new Point3D(j*tileDimension, 0, floorDepth + i*tileDimension), new Point3D(j*tileDimension, 0, floorDepth + (i+1)*tileDimension),
                                 new Point3D((j+1)*tileDimension, 0, floorDepth + (i+1)*tileDimension),new Point3D((j+1)*tileDimension, 0, floorDepth + i*tileDimension)
                         ).setEmission( new Color(colorFlag? java.awt.Color.BLACK: java.awt.Color.WHITE))
-                                .setMaterial(new Material().setkD(0.5).setkS(0.3).setkR(0.2).setGlossyRadius(0.1))
+                                .setMaterial(new Material().setkD(0.3).setkS(0.3).setkR(0.4).setGlossyRadius(0.1))
 
                 );
                 colorFlag = !colorFlag;
@@ -311,20 +311,20 @@ public class GlossyDiffuseTests {
         double placementRadius = 20;
 
         //The scale of all of the sphere-system.
-        double sphereScale = 1.5;
+        double sphereScale = 2.5;
 
         scene.geometries.add(
                 new Sphere(new Point3D(placementRadius*sphereScale, radA*sphereScale, floorCenter), radA*sphereScale)
-                .setEmission(new Color(java.awt.Color.RED))
-                .setMaterial(new Material().setkD(0.5).setkS(0.5).setnShininess(40)),
+                .setEmission(new Color(java.awt.Color.RED).reduce(4.5))
+                .setMaterial(new Material().setkD(0.999).setkS(0.9).setnShininess(60)),
 
                 new Sphere(new Point3D(0, radB*sphereScale, floorCenter + placementRadius*sphereScale), radB*sphereScale)
-                        .setEmission(new Color(java.awt.Color.GREEN))
-                        .setMaterial(new Material().setkD(0.5).setkS(0.5).setnShininess(40).setkR(0.5).setGlossyRadius(0.1)),
+                        .setEmission(new Color(java.awt.Color.GREEN).reduce(4))
+                        .setMaterial(new Material().setkD(0.999).setkS(0.9).setnShininess(60).setkR(0.5).setGlossyRadius(0.3)),
 
                 new Sphere(new Point3D(-placementRadius*sphereScale, radC*sphereScale, floorCenter), radC*sphereScale)
-                        .setEmission(new Color(java.awt.Color.BLUE))
-                        .setMaterial(new Material().setkD(0.5).setkS(0.5).setnShininess(40).setkT(0.5).setDiffuseRadius(0.1))
+                        .setEmission(new Color(java.awt.Color.BLUE).reduce(4))
+                        .setMaterial(new Material().setkD(0.999).setkS(0.9).setnShininess(60).setkT(0.15).setDiffuseRadius(0.3))
         );
 
 
@@ -384,7 +384,7 @@ public class GlossyDiffuseTests {
                             new Point3D(currX + slScale*slWidth/2, 0, currZ + slScale*slWidth/2),
                             new Point3D(currX + slScale*slWidth/2, slScale*slHeight, currZ + slScale*slWidth/2),
                             new Point3D(currX + slScale*slWidth/2, slScale*slHeight, currZ - slScale*slWidth/2)
-                    ).setEmission(new Color(java.awt.Color.WHITE).reduce(4))
+                    ).setEmission(new Color(java.awt.Color.WHITE).reduce(8))
                             .setMaterial(new Material().setkD(0.2).setkS(0.2).setnShininess(20))
                     ,
 
@@ -394,7 +394,7 @@ public class GlossyDiffuseTests {
                             new Point3D(currX + slScale*slWidth/2, slScale*slHeight, currZ + slScale*slWidth/2),
                             new Point3D(currX - slScale*slWidth/2, slScale*slHeight, currZ + slScale*slWidth/2),
                             new Point3D(currX - slScale*slWidth/2, 0, currZ + slScale*slWidth/2)
-                    ).setEmission(new Color(java.awt.Color.WHITE).reduce(4))
+                    ).setEmission(new Color(java.awt.Color.WHITE).reduce(8))
                             .setMaterial(new Material().setkD(0.2).setkS(0.2).setnShininess(20))
                     ,
 
@@ -404,7 +404,7 @@ public class GlossyDiffuseTests {
                             new Point3D(currX - slScale*slWidth/2, 0, currZ + slScale*slWidth/2),
                             new Point3D(currX - slScale*slWidth/2, slScale*slHeight, currZ + slScale*slWidth/2),
                             new Point3D(currX - slScale*slWidth/2, slScale*slHeight, currZ - slScale*slWidth/2)
-                    ).setEmission(new Color(java.awt.Color.WHITE).reduce(4))
+                    ).setEmission(new Color(java.awt.Color.WHITE).reduce(8))
                             .setMaterial(new Material().setkD(0.2).setkS(0.2).setnShininess(20))
                     ,
 
@@ -414,7 +414,7 @@ public class GlossyDiffuseTests {
                             new Point3D(currX + slScale*slWidth/2, slScale*slHeight, currZ - slScale*slWidth/2),
                             new Point3D(currX - slScale*slWidth/2, slScale*slHeight, currZ - slScale*slWidth/2),
                             new Point3D(currX - slScale*slWidth/2, 0, currZ - slScale*slWidth/2)
-                    ).setEmission(new Color(java.awt.Color.WHITE).reduce(4))
+                    ).setEmission(new Color(java.awt.Color.WHITE).reduce(8))
                             .setMaterial(new Material().setkD(0.2).setkS(0.2).setnShininess(20))
                     ,
 
@@ -424,7 +424,7 @@ public class GlossyDiffuseTests {
                             new Point3D(currX + slScale*slWidth/2, slScale*slHeight, currZ + slScale*slWidth/2),
                             new Point3D(currX - slScale*slWidth/2, slScale*slHeight, currZ + slScale*slWidth/2),
                             new Point3D(currX - slScale*slWidth/2, slScale*slHeight, currZ - slScale*slWidth/2)
-                    ).setEmission(new Color(java.awt.Color.PINK).reduce(2))
+                    ).setEmission(new Color(java.awt.Color.PINK).reduce(8))
                             .setMaterial(new Material().setkD(0.2).setkS(0.2).setnShininess(20))
             );
 
@@ -440,7 +440,7 @@ public class GlossyDiffuseTests {
             Color bulbEmission = new Color(java.awt.Color.PINK);
             Material bulbMaterial = new Material().setkD(0.1).setkS(0.1).setnShininess(3).setkT(0.5).setDiffuseRadius(0.05);
 
-            Color lightColor = new Color(java.awt.Color.PINK).reduce(8);
+            Color lightColor = new Color(java.awt.Color.PINK).reduce(2);
 
             //Now adding bulbs according to current light:
             //Left bulb:
@@ -490,15 +490,16 @@ public class GlossyDiffuseTests {
         }
 
         Render render = new Render() //
-                .setImageWriter(new ImageWriter("BallsTest", 600, 600))
+                .setImageWriter(new ImageWriter("BallsTestWithGlossAndDiffuse", 600, 600))
                 .setCamera(camera) //
-                .setRayTracer(new RayTracerBasic(scene).setGlossyEnabled(false).setDiffuseEnabled(false))
+                .setRayTracer(new RayTracerBasic(scene).setGlossyEnabled(true).setDiffuseEnabled(true).setNumGlossyDiffuseRays(16))
                 .setMultithreading(3);
         long begin = System.currentTimeMillis();
         render.renderImage();
         long end = System.currentTimeMillis();
         System.out.print("rendered in: " + ((int)(end - begin)/1000)/60 + " minutes ");
         System.out.print("and " + ((int)(end - begin)/1000)%60 + " seconds.");
+        //render.printGrid(50, new Color(java.awt.Color.YELLOW));
         render.writeToImage();
 
     }
