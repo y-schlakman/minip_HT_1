@@ -1,1 +1,1 @@
-packageSearchIndex = [{"l":"All Packages","u":"allpackages-index.html"},{"l":"elements"},{"l":"geometries"},{"l":"lights"},{"l":"pictureImprovements"},{"l":"primitives"},{"l":"renderer"},{"l":"scene"}];updateSearchResults();
+packageSearchIndex = [{"l":"All Packages","u":"allpackages-index.html"},{"l":"elements"},{"l":"geometries"},{"l":"lights"},{"l":"pictureImprovements"},{"l":"primitives"},{"l":"renderer"},{"l":"renderTimeImprovements"},{"l":"scene"}];updateSearchResults();

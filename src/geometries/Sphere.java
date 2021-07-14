@@ -13,7 +13,6 @@ public class Sphere extends Geometry{
 
     final private Point3D _center; //The center of the sphere.
     final private double _radius; //The radius of the sphere.
-
     /**
      * constructor for sphere that gets the center and the radius of the sphere.
      * @param c center of sphere
@@ -24,6 +23,7 @@ public class Sphere extends Geometry{
             throw new IllegalArgumentException("radius must have a positive value");
         _center = c;
         _radius = r;
+        createAABB();
     }
 
     /**
@@ -93,6 +93,15 @@ public class Sphere extends Geometry{
         if(t2>0)
             res.add(new GeoPoint(this, ray.getPoint(t2)));
         return res;
+    }
+
+    /**
+     * create spheres aabb.
+     */
+    private void createAABB(){
+        Point3D max = new Point3D(_center.getX().getCoord() + _radius, _center.getY().getCoord() + _radius, _center.getZ().getCoord() + _radius);
+        Point3D min = new Point3D(_center.getX().getCoord() - _radius, _center.getY().getCoord() - _radius, _center.getZ().getCoord() - _radius);
+        aabb = new AABB(max, min);
     }
 
     @Override

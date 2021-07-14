@@ -15,6 +15,9 @@ public abstract class Geometry implements Intersectable {
     //Material properties of this geometry object.
     protected Material material = new Material();
 
+    //the geometry's bounding box
+    protected AABB aabb;
+
     /**
      * Getter methode for material field.
      * @return The 'material' field.
@@ -58,4 +61,9 @@ public abstract class Geometry implements Intersectable {
      * @return normalized normal vector to the geometry at point.
      */
     public abstract Vector getNormal(Point3D point);
+
+    @Override
+    public AABB getAABB() {
+        return aabb;
+    }
 }

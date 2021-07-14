@@ -163,7 +163,7 @@ public class GlossyDiffuseTests {
 
         scene.geometries.add(scopeBoarder.toArray(new Polygon[scopeBoarder.size()]));
         scene.geometries.add(polyScope.setEmission(new Color(java.awt.Color.BLACK))
-        .setMaterial(new Material().setkT(1).setkD(0.1).setkS(0.1).setDiffuseRadius(3))
+        .setMaterial(new Material().setkT(1).setkD(0.1).setkS(0.1).setDiffuseRadius(10))
                 );
 
         //Cross-hair features, affectively two rectangles across the scope.
@@ -276,7 +276,7 @@ public class GlossyDiffuseTests {
                                 new Point3D(-j*tileDimension, 0, floorDepth + i*tileDimension), new Point3D(-j*tileDimension, 0, floorDepth + (i+1)*tileDimension),
                                 new Point3D(-(j+1)*tileDimension, 0, floorDepth + (i+1)*tileDimension),new Point3D(-(j+1)*tileDimension, 0, floorDepth + i*tileDimension)
                         ).setEmission( new Color(colorFlag? java.awt.Color.WHITE: java.awt.Color.BLACK))
-                                .setMaterial(new Material().setkD(0.3).setkS(0.3).setkR(0.4).setGlossyRadius(0.1))
+                                .setMaterial(new Material().setkD(0.3).setkS(0.3).setkR(0.4).setGlossyRadius(5))
                         ,
 
                         //Right side:
@@ -284,7 +284,7 @@ public class GlossyDiffuseTests {
                                 new Point3D(j*tileDimension, 0, floorDepth + i*tileDimension), new Point3D(j*tileDimension, 0, floorDepth + (i+1)*tileDimension),
                                 new Point3D((j+1)*tileDimension, 0, floorDepth + (i+1)*tileDimension),new Point3D((j+1)*tileDimension, 0, floorDepth + i*tileDimension)
                         ).setEmission( new Color(colorFlag? java.awt.Color.BLACK: java.awt.Color.WHITE))
-                                .setMaterial(new Material().setkD(0.3).setkS(0.3).setkR(0.4).setGlossyRadius(0.1))
+                                .setMaterial(new Material().setkD(0.3).setkS(0.3).setkR(0.4).setGlossyRadius(5))
 
                 );
                 colorFlag = !colorFlag;
@@ -320,11 +320,11 @@ public class GlossyDiffuseTests {
 
                 new Sphere(new Point3D(0, radB*sphereScale, floorCenter + placementRadius*sphereScale), radB*sphereScale)
                         .setEmission(new Color(java.awt.Color.GREEN).reduce(4))
-                        .setMaterial(new Material().setkD(0.999).setkS(0.9).setnShininess(60).setkR(0.5).setGlossyRadius(0.3)),
+                        .setMaterial(new Material().setkD(0.999).setkS(0.9).setnShininess(60).setkR(0.5).setGlossyRadius(5)),
 
                 new Sphere(new Point3D(-placementRadius*sphereScale, radC*sphereScale, floorCenter), radC*sphereScale)
                         .setEmission(new Color(java.awt.Color.BLUE).reduce(4))
-                        .setMaterial(new Material().setkD(0.999).setkS(0.9).setnShininess(60).setkT(0.15).setDiffuseRadius(0.3))
+                        .setMaterial(new Material().setkD(0.999).setkS(0.9).setnShininess(60).setkT(0.4).setDiffuseRadius(5))
         );
 
 
@@ -438,7 +438,7 @@ public class GlossyDiffuseTests {
             double bulbHeight = slScale*(slHeight-slBulbRadius);
 
             Color bulbEmission = new Color(java.awt.Color.PINK);
-            Material bulbMaterial = new Material().setkD(0.1).setkS(0.1).setnShininess(3).setkT(0.5).setDiffuseRadius(0.05);
+            Material bulbMaterial = new Material().setkD(0.1).setkS(0.1).setnShininess(3).setkT(0.5).setDiffuseRadius(6);
 
             Color lightColor = new Color(java.awt.Color.PINK).reduce(2);
 
@@ -492,14 +492,9 @@ public class GlossyDiffuseTests {
         Render render = new Render() //
                 .setImageWriter(new ImageWriter("BallsTestWithGlossAndDiffuse", 600, 600))
                 .setCamera(camera) //
-                .setRayTracer(new RayTracerBasic(scene).setGlossyEnabled(true).setDiffuseEnabled(true).setNumGlossyDiffuseRays(16))
+                .setRayTracer(new RayTracerBasic(scene).setGlossyEnabled(true).setDiffuseEnabled(true).setNumGlossyDiffuseRays(5))
                 .setMultithreading(3);
-        long begin = System.currentTimeMillis();
         render.renderImage();
-        long end = System.currentTimeMillis();
-        System.out.print("rendered in: " + ((int)(end - begin)/1000)/60 + " minutes ");
-        System.out.print("and " + ((int)(end - begin)/1000)%60 + " seconds.");
-        //render.printGrid(50, new Color(java.awt.Color.YELLOW));
         render.writeToImage();
 
     }

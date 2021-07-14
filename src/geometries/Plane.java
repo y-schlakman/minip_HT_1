@@ -126,7 +126,10 @@ public class Plane extends Geometry {
         return lgp;
     }
 
-
+    @Override
+    public AABB getAABB() {
+        return null;
+    }
 
     @Override
     public String toString() {

@@ -1561,12 +1561,8 @@ public class TeapotTest {
                 .setCamera(camera)
                 .setImageWriter(imageWriter)
                 .setRayTracer(new RayTracerBasic(scene))
-                .setMultithreading(3);
-        long begin = System.currentTimeMillis();
+                .setMultithreading(30);
         render.renderImage();
-        long end = System.currentTimeMillis();
-        System.out.print("rendered in: " + ((int)(end - begin)/1000)/60 + " minutes ");
-        System.out.print("and " + ((int)(end - begin)/1000)%60 + " seconds.");
         render.printGrid(50, new Color(java.awt.Color.YELLOW));
         render.writeToImage();
     }

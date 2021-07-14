@@ -272,6 +272,7 @@ public class Render {
      * the Renderer object
      */
     public void renderImage() {
+        long begin = System.currentTimeMillis();
         if (imageWriter == null)
             throw new MissingResourceException(RESOURCE_ERROR, RENDER_CLASS, IMAGE_WRITER_COMPONENT);
         if (camera == null)
@@ -287,6 +288,9 @@ public class Render {
                     castRay(nX, nY, j, i);
         else
             renderImageThreaded();
+        long end = System.currentTimeMillis();
+        System.out.print("rendered in: " + ((int)(end - begin)/1000)/60 + " minutes ");
+        System.out.print("and " + ((int)(end - begin)/1000)%60 + " seconds.");
     }
 
     /**

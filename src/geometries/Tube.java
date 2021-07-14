@@ -65,6 +65,11 @@ public class Tube extends Geometry {
         return point.subtract(o).normalize();
     }
 
+    @Override
+    public AABB getAABB() {
+        return null;
+    }
+
     /**
      * Finds all intersection points (with respect to this tube as their underlying geometry)
      * between this tube and a given ray.

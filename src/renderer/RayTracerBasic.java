@@ -1,10 +1,13 @@
 package renderer;
 
 import elements.LightSource;
+import geometries.Geometries;
+import geometries.Intersectable;
 import primitives.*;
 import scene.Scene;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import geometries.Intersectable.GeoPoint;
@@ -40,6 +43,7 @@ public class RayTracerBasic extends RayTracerBase {
      */
     public RayTracerBasic(Scene scene) {
         super(scene);
+        transformToTree(scene.geometries);
     }
 
     /**
@@ -463,4 +467,34 @@ public class RayTracerBasic extends RayTracerBase {
     private GeoPoint findClosestIntersection(Ray ray) {
         return ray.findClosestGeoPoint(scene.geometries.findGeoIntersections(ray));
     }
+
+    /**
+     * Given a geometry functioning as a plane list of intersectables, transforms said list into
+     *  the form of a binary tree.
+     *
+     * @param g said geometry
+     */
+    private void transformToTree(Geometries g){
+        if(g.getIntersections().size()<=2)
+            return;
+        Geometries left = new Geometries();
+        Geometries right = new Geometries();
+        g.sortGeometries(g.getAABB().getLongestAxis());
+        List<Intersectable> geos = g.getIntersections();
+
+        int mid = geos.size()/2;
+
+        for(int i=0;i<geos.size();++i){
+            if(i<mid)
+                left.add(geos.get(i));
+            else
+                right.add(geos.get(i));
+        }
+        transformToTree(left);
+        transformToTree(right);
+        g = new Geometries();
+        g.add(left);
+        g.add(right);
+    }
+
 }

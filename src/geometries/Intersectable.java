@@ -14,7 +14,7 @@ import java.util.stream.Collectors;
 public interface Intersectable {
 
     /**
-     * Class representing a point with repsect to a geometry it belongs to.
+     * Class representing a point with respect to a geometry it belongs to.
      *
      * @author Yosi and Eli.
      */
@@ -66,4 +66,10 @@ public interface Intersectable {
      * @return a list of points of intersection, with respect to the implementing geometry.
      */
     List<GeoPoint> findGeoIntersections(Ray ray);
+
+    /**
+     * gets the AABB of the intersectable
+     * @return the intersectable's AABB.
+     */
+    AABB getAABB();
 }
